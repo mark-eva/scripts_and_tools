@@ -1,0 +1,103 @@
+SPIRE PATCHING erros
+
+Validating logfiles...
+Patch 26713565 apply: WITH ERRORS
+  logfile: /oracle/cfgtoollogs/sqlpatch/26713565/21602269/26713565_apply_SPST1_2017Nov15_18_40_51.log (errors)
+    Error at line 18988: Warning: Package Body created with compilation errors.
+    Error at line 18995: 378/7    PL/SQL: SQL Statement ignored
+    Error at line 18996: 378/19   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 18997: 410/8    PL/SQL: SQL Statement ignored
+    Error at line 18998: 410/20   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 18999: 505/5    PL/SQL: SQL Statement ignored
+    Error at line 19000: 505/39   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19001: 526/7    PL/SQL: SQL Statement ignored
+    Error at line 19005: 526/53   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19006: 538/13   PL/SQL: SQL Statement ignored
+    Error at line 19007: 538/59   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19008: 736/3    PL/SQL: SQL Statement ignored
+    Error at line 19009: 736/15   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19010: 737/3    PL/SQL: SQL Statement ignored
+    Error at line 19011: 737/60   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19015: 791/5    PL/SQL: SQL Statement ignored
+    Error at line 19016: 791/96   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19017: 841/5    PL/SQL: SQL Statement ignored
+    Error at line 19018: 841/93   PL/SQL: ORA-00942: table or view does not exist
+    Error at line 19019: 890/6    PL/SQL: SQL Statement ignored
+    Error at line 19020: 900/59   PL/SQL: ORA-00942: table or view does not exist
+
+	
+	
+REM Apply script for patch 26713565/21602269
+DEFINE description = &1
+DEFINE logfiledir = &2
+DEFINE flags = &3
+DEFINE bundle_series = &4
+
+
+WOrk around manual PATCHING
+
+ cd $ORACLE_HOME/sqlpatch/26713565/21602269
+
+exec dbms_sqlpatch.session_initialize('/oracle/product/12.1.0/db1', FALSE, FALSE)
+@<install script> <description> <log file directory> <flags> <bundle_series>
+
+@26713565_apply.sql sqlpatch /oracle/product/12.1.0/db1/sqlpatch/26713565/21602269 N PSU
+
+
+
+UPDATE dba_registry_sqlpatch
+SET status = 'SUCCESS', action_time = SYSTIMESTAMP
+WHERE patch_id = 26713565
+AND action = UPPER('apply')
+AND action_time = (SELECT MAX(action_time)
+FROM dba_registry_sqlpatch
+WHERE patch_id = 26713565
+AND action = UPPER('apply'));
+COMMIT;
+
+
+WOrk around manual PATCHING Java
+
+ cd $ORACLE_HOME/sqlpatch/26635845/21564421
+
+exec dbms_sqlpatch.session_initialize('/oracle/product/12.1.0/db1', FALSE, FALSE)
+@<install script> <description> <log file directory> <flags> <bundle_series>
+
+@26635845_apply.sql sqlpatch /oracle/product/12.1.0/db1/sqlpatch/26713565/21602269 N OJVM
+
+
+
+UPDATE dba_registry_sqlpatch
+SET status = 'SUCCESS', action_time = SYSTIMESTAMP
+WHERE patch_id = 26713565
+AND action = UPPER('apply')
+AND action_time = (SELECT MAX(action_time)
+FROM dba_registry_sqlpatch
+WHERE patch_id = 26713565
+AND action = UPPER('apply'));
+COMMIT;
+
+
+-----Java Datapatch
+Apply the patch using force option
+	proceed to 
+	the patch directory
+	/oracle/product/12.1.0/db1/OPatch/datapatch -apply 26635845 -force;
+	
+Test if Java is working
+select dbms_java.longname('TEST') from dual;
+ -- If it doesnt bomb out then it is alright
+ 
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+

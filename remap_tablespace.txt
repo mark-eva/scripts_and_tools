@@ -1,0 +1,13 @@
+-- Remap tablespace syntax creator 
+
+SELECT 'REMAP_TABLESPACE=' || LISTAGG(tb_name,':TBSDATA,')  WITHIN GROUP (ORDER BY tb_name) remap_tb
+from 
+(
+select distinct (a.NAME) tb_name
+from v$tablespace a, V$DATAFILE b
+where a.TS# = b.TS#
+and a.name NOT LIKE 'UNDO%'
+AND a.name NOT LIKE 'SYS%'
+order by 1
+)
+

@@ -1,0 +1,40 @@
+-- Find out the most session openned per user
+
+select count (*)
+	, username
+	, machine
+	, osuser
+    , status
+from v$session 
+where service_name not like '%BACKGROUND%'
+group by osuser
+, username
+, machine 
+, status
+order by 1 desc;
+
+
+/* 
+   Find out the os spid of each session of target username
+   and create the syntax for sledgehammer kill
+*/
+
+col username for a20
+col osuser for a20
+col spid for a10
+
+select s.username
+	, s.osuser
+    , s.machine
+    , s.status
+    , p.spid
+    , 'kill -9 ' || p.spid as kill_command
+FROM   v$session s,
+       v$process p
+where s.paddr = p.addr
+and s.service_name not like '%BACKGROUND%'
+and s.username = '&username'
+and s.osuser = '&osuser'
+;
+
+

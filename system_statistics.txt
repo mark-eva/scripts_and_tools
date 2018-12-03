@@ -1,0 +1,23 @@
+-- View current system statistics
+
+select * from sys.aux_stats$;
+
+Example Output:
+
+SNAME                          PNAME                               PVAL1 PVAL2
+------------------------------ ------------------------------ ---------- -----------------------------------------------
+SYSSTATS_INFO                  STATUS                                    COMPLETED
+SYSSTATS_INFO                  DSTART                                    07-06-2015 12:38
+SYSSTATS_INFO                  DSTOP                                     07-06-2015 12:38
+SYSSTATS_INFO                  FLAGS                                   1
+SYSSTATS_MAIN                  CPUSPEEDNW                     3007.76531
+SYSSTATS_MAIN                  IOSEEKTIM                              10
+SYSSTATS_MAIN                  IOTFRSPEED                           4096
+
+
+
+
+
+exec DBMS_STATS.GATHER_SYSTEM_STATS('interval', interval=>15);
+execute dbms_stats.gather_system_stats('stop')
+execute dbms_stats.gather_system_stats('start')

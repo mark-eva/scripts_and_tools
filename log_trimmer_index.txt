@@ -1,0 +1,28 @@
+select * from table_housekeeping
+
+alter session set nls_date_format = 'dd-mm-yyyy hh24:mi:ss'
+
+select date_column ||'__idx' 
+,owner || '.' || table_name, 
+date_column
+from dbamgr.table_housekeeping
+where last_delete_outcome like '%No index%'
+
+select 'create index '  || date_column ||'__idx ' || 'on ' ||owner || '.' || table_name || ' nologging ' ||'(' ||date_column || ');'
+from dbamgr.table_housekeeping
+where last_delete_outcome like '%No index%'
+
+
+create index run_datetime__idx1  on  foxmgr.search_param_logs nologging  (run_datetime)
+create index track_written_timestamp__idx on fox5mgr.fox_thread_tracks nologging (track_written_timestamp);
+
+
+create index track_written_timestamp__idx on fox5mgr.fox_thread_tracks nologging (track_written_timestamp);
+create index last_updated_datetime__idx on fox5mgr.fox_engine_requests nologging (last_updated_datetime);
+create index log_created_timestamp__idx on fox5mgr.fox_request_log nologging (log_created_timestamp);
+create index request_datetime__idx on fox5mgr.rest_request_log nologging (request_datetime);
+create index run_datetime__idx on foxmgr.search_query_logs nologging (run_datetime);
+create index created_date__idx on foxmgr.fox_thread_log nologging (created_date);
+create index run_datetime__idx on foxmgr.search_param_logs nologging (run_datetime);
+create index step_timestamp__idx on bpmmgr.bpm_log_step nologging (step_timestamp);
+create index log_datetime__idx on bpmmgr.bpm_logs nologging (log_datetime);

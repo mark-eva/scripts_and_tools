@@ -1,0 +1,82 @@
+ECDITLV1
+Total Size
+
+TABLESPACE_NAME                   Max  Alloc         Free Bytes         Used Bytes    Allocated Bytes        Max Available
+------------------------------ ------ ------ ------------------ ------------------ ------------------ --------------------
+TBSDATA                           -10     14     44,239,945,728    264,976,613,376    309,216,559,104      240,518,053,888
+TBSBLOB                             7      5     11,211,440,128    222,864,187,392    234,075,627,520      240,518,053,888
+TBSCLOB                            12      2      5,693,636,608    303,543,894,016    309,237,530,624      343,597,219,840
+TBSIDX                             29      5      2,800,418,816     48,739,172,352     51,539,591,168       68,719,443,968
+SYSAUX                             84      5        282,329,088      5,579,210,752      5,861,539,840       34,359,721,984
+SYSTEM                             97      0          1,376,256        973,799,424        975,175,680       34,359,721,984
+UNDOTBS1                           99     96     10,709,041,152        470,876,160     11,179,917,312       34,359,721,984
+SAVEDTABLES                        99     28        117,243,904        302,186,496        419,430,400       34,359,721,984
+TEMP                               99     99     34,136,391,680        222,298,112     34,358,689,792       34,359,721,984
+USERS                             100      5          5,570,560         99,287,040        104,857,600       34,359,721,984
+NOACCESS                          100     98        102,760,448          2,097,152        104,857,600       34,359,721,984
+                                             ------------------ ------------------ ------------------ --------------------
+sum                                             109,300,154,368    847,773,622,272    957,073,776,640    1,133,870,825,472
+
+
+Logdata
+
+Based Tables
+
+OWNER                          TABLE_NAME                     DATE_COLUMN                    RETENTION_DAYS   Current_size		size with retention         Per_day
+------------------------------ ------------------------------ ------------------------------ -------------- -----------------  ----------------------	---------------
+bpmmgr                         bpm_logs                       log_datetime                               48 
+bpmmgr                         bpm_log_step                   step_timestamp                             48     78063
+fox5mgr                        FOX_THREAD_TRACKS              track_written_timestamp                   100 
+fox5mgr                        fox_engine_requests            LAST_UPDATED_DATETIME                      60 
+fox5mgr                        fox_request_log                LOG_CREATED_TIMESTAMP                       1 
+fox5mgr                        rest_request_log               request_datetime                           50 
+foxmgr                         search_query_logs              RUN_DATETIME                               10 	 56667		           538MB				53MB
+foxmgr                         fox_thread_log                 LAST_UPDATED_DATE                          10 	156264			      trimming in place 	
+foxmgr                         fox_requests                   START_DATETIME                              1 	  7632				   
+foxmgr						   FOX_THREAD_LOG_QUERIES         -- ask support-------------------------------      12949										129MB
+foxmgr						   FOX_UPLOAD_LOG				  -- ask support-------------------------------		  2945
+foxmgr						   SEARCH_PARAM_LOGS			  -- ask support-------------------------------		  1239
+
+
+
+
+Total
+	315/847/957
+	
+37% logs 
+
+Reclaimable atleast
+44%
+424G
+	
+- what is oldest date
+15/09/2014 11:54:06
+select RUN_DATETIME from foxmgr.search_query_logs   order by RUN_DATETIME  
+
+1052 -days
+
+- Convert MB to KB
+	58027008
+	
+- Divide KB to days -- GIves you kb per days
+55158.75285171103
+
+- Convert it to MB to get mb per day /1024
+53 mb per day 
+
+- Times it to the retention you want
+53 * 10 = 
+
+
+25/04/2017 00:07:55
+
+100 days
+
+
+
+
+
+	
+	
+
+

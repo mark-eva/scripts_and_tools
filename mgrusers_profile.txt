@@ -1,0 +1,5 @@
+col username for a30
+col profile for a30
+col expiry_date for a30
+SELECT user_id, USERNAME, PROFILE, ACCOUNT_STATUS, expiry_date FROM DBA_USERS where username like '%MGR%'
+and expiry_date is not null

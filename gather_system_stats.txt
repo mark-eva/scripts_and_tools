@@ -1,0 +1,27 @@
+Procedure to gather System stats
+
+-- Simplest form
+	exec DBMS_STATS.GATHER_SYSTEM_STATS ('interval',interval => 60);
+	
+-- A bit more complicated where you can put the stats on a various table and interchange depending on the workload
+
+	
+
+	-- Create table to store system stats
+	exec DBMS_STATS.CREATE_STAT_TABLE ('SYS','SYSTEM_STATISTICS');
+
+
+	-- Gather stats for 1 hour
+	BEGIN
+	DBMS_STATS.GATHER_SYSTEM_STATS ('interval',interval => 60, stattab => 'SYSTEM_STATISTICS',
+	statid => 'WORKLOAD');
+	END;
+	/
+
+	-- Import stats that have been gathered
+	execute DBMS_STATS.IMPORT_SYSTEM_STATS(stattab => 'SYSTEM_STATISTICS', statid => 'WORKLOAD',
+	statown => 'SYS');
+	Once you have done this you can view the values from the SQLT report or from a SELECT statement.
+	
+-- Verify stats that have been gathered
+	 select * from sys.aux_stats$

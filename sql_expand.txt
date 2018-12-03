@@ -1,0 +1,79 @@
+-- SQL expand function returns the underlying sql used access a view. This is particularly useful when troubleshooting queries
+   that uses views. An example usage is below
+   
+
+-- The underlying query that was being investigated
+	SELECT 
+    COUNT(*) count
+	FROM cases c
+	JOIN case_workflow_stages_current cwsc ON cwsc.case_id = c.id
+	JOIN case_types ct ON ct.case_type = c.case_type AND ct.system_area = c.system_area
+	WHERE ct.super_type = :case_super_type
+	AND ct.system_area = :system_area
+	AND cwsc.stage_label = :stage_label
+
+-- When you look at the plan the filter predicate mentions "STAGE_ID"="MAX_INITIAL_OR_REOPEN_ID" being used a  predicate. However, we can look 
+   at the nested query for the view that is being used by using the following:
+	Plan hash value: 1459683290
+ 
+---------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                 | Name                      | Starts | E-Rows | A-Rows |   A-Time   | Buffers |
+---------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                          |                           |      1 |        |      1 |00:00:00.76 |     575K|
+|   1 |  SORT AGGREGATE                           |                           |      1 |      1 |      1 |00:00:00.76 |     575K|
+|   2 |   NESTED LOOPS                            |                           |      1 |      1 |      2 |00:00:00.75 |     575K|
+|   3 |    NESTED LOOPS                           |                           |      1 |      4 |   9837 |00:00:00.39 |     575K|
+|   4 |     NESTED LOOPS                          |                           |      1 |      1 |   4659 |00:00:00.85 |     575K|
+|   5 |      NESTED LOOPS                         |                           |      1 |      1 |   7831 |00:00:00.44 |     560K|
+|   6 |       NESTED LOOPS                        |                           |      1 |      1 |   7831 |00:00:00.42 |     547K|
+|   7 |        NESTED LOOPS                       |                           |      1 |      1 |   4341 |00:00:00.49 |     519K|
+|   8 |         NESTED LOOPS                      |                           |      1 |      1 |    110K|00:00:00.26 |     352K|
+|   9 |          NESTED LOOPS                     |                           |      1 |      1 |    291K|00:00:00.11 |    5419 |
+|* 10 |           INDEX UNIQUE SCAN               | CASE_SUPER_TYPES_UK1      |      1 |      1 |      1 |00:00:00.01 |       1 |
+|* 11 |           TABLE ACCESS FULL               | XV_CASE_STAGES_DATA       |      1 |      1 |    291K|00:00:00.07 |    5418 |
+|* 12 |          TABLE ACCESS BY INDEX ROWID      | XV_CASE_DTLS_DATA         |    291K|      1 |    110K|00:00:00.40 |     346K|
+|* 13 |           INDEX UNIQUE SCAN               | XV_CASE_DTLS_DPK          |    291K|      1 |    291K|00:00:00.12 |   54966 |
+|* 14 |         TABLE ACCESS BY INDEX ROWID       | CASE_TYPE_ATTRIBUTES      |    110K|      1 |   4341 |00:00:00.14 |     167K|
+|* 15 |          INDEX UNIQUE SCAN                | CASE_TYPE_ATTRIBUTES_PK   |    110K|      1 |    110K|00:00:00.04 |       9 |
+|* 16 |        TABLE ACCESS BY INDEX ROWID BATCHED| XV_BPM_BUS_CTXS_DATA      |   4341 |      1 |   7831 |00:00:00.03 |   28586 |
+|* 17 |         INDEX RANGE SCAN                  | XV_BPM_BUS_CTXS_DIX002    |   4341 |      2 |  25127 |00:00:00.01 |    8288 |
+|* 18 |       INDEX RANGE SCAN                    | BUSINESS_ROUTINE_CTX_IDX1 |   7831 |      1 |   7831 |00:00:00.01 |   12073 |
+|* 19 |      INDEX RANGE SCAN                     | BUSINESS_STAGES_IDX17     |   7831 |      1 |   4659 |00:00:00.02 |   15035 |
+|* 20 |     INDEX RANGE SCAN                      | XV_BPD_STAGECATS_IDX1004  |   4659 |      4 |   9837 |00:00:00.01 |       3 |
+|* 21 |    TABLE ACCESS BY INDEX ROWID            | XV_BPD_STAGECATS_DATA     |   9837 |      1 |      2 |00:00:00.01 |       1 |
+---------------------------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+  10 - access("CST"."SYSTEM_AREA"=:SYSTEM_AREA AND "CST"."SHORT_NAME"=:CASE_SUPER_TYPE)
+  11 - filter(("STAGE_ID"="MAX_INITIAL_OR_REOPEN_ID" AND "STATUS_CONTROL"='C'))
+  
+  
+-- Unnest the view using sql expand
+
+
+SET SERVEROUTPUT ON
+DECLARE
+ l_clob CLOB;
+BEGIN
+ DBMS_UTILITY.expand_sql_text (
+   input_sql_text  =>
+'
+SELECT
+ COUNT(*) count
+FROM appenv.cases c
+JOIN appenv.case_workflow_stages_current cwsc ON cwsc.case_id = c.id
+JOIN appenv.case_types ct ON ct.case_type = c.case_type AND ct.system_area = c.system_area
+WHERE ct.super_type = :b1
+AND ct.system_area = :b2
+AND cwsc.stage_label = :b3
+'
+   ,output_sql_text => l_clob
+ );
+
+ DBMS_OUTPUT.put_line(l_clob);
+END;
+/
+  
+  

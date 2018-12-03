@@ -1,0 +1,42 @@
+-- All about Automatic SQL tuning Advisor
+
+
+-- Find out if Automatic SQL tuning advisor is switched on
+	SELECT client_name, status FROM dba_autotask_client;
+
+-- View status of the last previous runs 
+
+	alter session set nls_date_format = 'dd-mm-yyyy hh24:mi:ss'
+
+	SELECT task_name, status, execution_end
+	FROM dba_advisor_executions
+	WHERE task_name='SYS_AUTO_SQL_TUNING_TASK'
+	and status = 'COMPLETED'
+	ORDER BY execution_end desc;
+
+
+-- View the results of sql tuning advisor
+	SELECT DBMS_AUTO_SQLTUNE.REPORT_AUTO_TUNING_TASK FROM DUAL;
+	SELECT DBMS_SQLTUNE.REPORT_AUTO_TUNING_TASK FROM DUAL;
+
+-- Disable SQL tuning advisor
+
+	BEGIN
+	DBMS_AUTO_TASK_ADMIN.DISABLE(
+	client_name => 'sql tuning advisor',
+	operation => NULL,
+	window_name => NULL);
+	END;
+
+-- Enable SQL tuning advisor
+
+	BEGIN
+	DBMS_AUTO_TASK_ADMIN.ENABLE(
+	client_name => 'sql tuning advisor',
+	operation => NULL,
+	window_name => NULL);
+	END;
+	/
+
+
+

@@ -1,0 +1,43 @@
+-- Finding Plans
+
+
+
+1.Explain plan 
+	usage:
+		explain plan for {your select statement}
+		select * from table(dbms_xplan.display);
+	
+Notes:
+	Disadvancetages:
+		Has no idea of the datatype behind bind variables
+			makes it impossible for the optimizer to consider some indexes that would otherwise be available
+			
+		Doesn't take into account for bind variables which when Oracle first parsed the sql
+		
+2.Autotrace
+	usage:
+		set autotrace on
+		set autotrace traceonly
+		set autotrace traceonly explain
+		set autotrace traceonly statistics
+		set autotrace off
+			
+Notes:
+	Essentially a shorcut for explain plan
+	You can limit the output to just plan , stats and both plan and stats without actually executing the statement
+		This is not true when executing DML statements such as insert, update and delete as the statement actually gets executed
+		
+	
+3.dbms_xplan.display_cursor()
+
+	usage:
+		dbms_xplan.display_cursor({sql_id},{child_number},{format options})
+		select * from table(dbms_xplan.display_cursor);
+
+
+Notes:
+	Returns the run time execution plan of the last sql statement that you have executed
+	
+
+
+	

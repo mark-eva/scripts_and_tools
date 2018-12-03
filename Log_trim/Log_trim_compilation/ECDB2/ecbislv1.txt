@@ -1,0 +1,57 @@
+ecbislv1 
+current size
+
+
+TABLESPACE_NAME                   Max  Alloc         Free Bytes         Used Bytes    Allocated Bytes        Max Available
+------------------------------ ------ ------ ------------------ ------------------ ------------------ --------------------
+TBSBLOB                            -9      2     10,560,208,896    447,877,079,040    458,437,287,936      412,316,663,808
+TBSIDX                              8      4      1,463,877,632     31,775,981,568     33,239,859,200       34,359,721,984
+USERS                              10      5      1,580,400,640     30,878,269,440     32,458,670,080       34,359,721,984
+TBSDATA                            12      6     28,990,177,280    453,119,672,320    482,109,849,600      515,395,829,760
+TBSCLOB                            23      1      1,376,714,752    159,684,509,696    161,061,224,448      206,158,331,904
+SAVEDTABLES                        87      7        333,185,024      4,595,122,176      4,928,307,200       34,359,721,984
+SYSAUX                             91      7        231,931,904      3,018,653,696      3,250,585,600       34,359,721,984
+UNDOTBS1                           94     82      8,800,698,368      1,936,719,872     10,737,418,240       34,359,721,984
+SYSTEM                             98     11        103,284,736        840,433,664        943,718,400       34,359,721,984
+TEMP                               98     98        525,336,576         11,534,336        536,870,912                    0
+TEMP                               99     99        530,579,456          6,291,456        536,870,912                    0
+TEMP                              100    100     34,348,187,648         11,534,336     34,359,721,984       34,359,721,984
+TEMP                              100    100     34,353,430,528          6,291,456     34,359,721,984       34,359,721,984
+NOACCESS                          100     98        102,498,304          2,359,296        104,857,600       34,359,721,984
+                                             ------------------ ------------------ ------------------ --------------------
+sum                                             123,300,511,744  1,133,764,452,352  1,257,064,964,096    1,443,108,323,328
+
+
+logdata
+
+Based Tables
+
+OWNER                          TABLE_NAME                     DATE_COLUMN                    RETENTION_DAYS   Current_size		size with retention         Per_day
+------------------------------ ------------------------------ ------------------------------ -------------- -----------------  ----------------------	---------------
+bpmmgr                         bpm_logs                       log_datetime                               48 	 
+bpmmgr                         bpm_log_step                   step_timestamp                             48      56993
+fox5mgr                        FOX_THREAD_TRACKS              track_written_timestamp                   100     164430
+fox5mgr                        fox_engine_requests            LAST_UPDATED_DATETIME                      60        644
+fox5mgr                        fox_request_log                LOG_CREATED_TIMESTAMP                       1       4721
+fox5mgr                        rest_request_log               request_datetime                           50        764
+foxmgr                         search_query_logs              RUN_DATETIME                               10 	 20614
+foxmgr                         fox_thread_log                 LAST_UPDATED_DATE                          10 	 13374
+foxmgr                         fox_requests                   START_DATETIME                              1 	  6164
+foxmgr						   FOX_THREAD_LOG_QUERIES         -- ask support-------------------------------       6337
+foxmgr						   FOX_UPLOAD_LOG				  -- ask support-------------------------------		  5312
+foxmgr						   SEARCH_PARAM_LOGS			  -- ask support-------------------------------		  3881
+
+
+283/1133/1257
+
+Logs total
+24%
+
+Reclaimable atleast
+35%
+406G
+
+
+
+
+

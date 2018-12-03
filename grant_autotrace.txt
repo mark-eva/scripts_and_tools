@@ -1,0 +1,10 @@
+Granting Autotrace on a non sys schema
+
+sqlplus / as sysdba
+
+	create role plustrace;
+	grant select on v_$sesstat to plustrace;
+	grant select on v_$statname to plustrace;
+	grant select on v_$mystat to plustrace;
+	grant plustrace to dba with admin option;
+	grant plustrace to <schema_name>;

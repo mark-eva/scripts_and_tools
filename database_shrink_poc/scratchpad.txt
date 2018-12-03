@@ -1,0 +1,18 @@
+
+
+
+Things that can be done better
+
+Export:
+	perform the export on a non active database 
+		mount mode or restricted mode
+		
+	perform a flashback export. by default exports are only consistent per table basis.
+		Solution
+			Perform point one instead of active database
+			Add flashback_time=systimestamp -- would have to rely on the space of undo 
+	
+Import
+	Include the following parameter on the parameter file
+		exclude=table_statistics -- you can then subsequently gather stats when the import has been completed
+		

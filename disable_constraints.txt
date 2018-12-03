@@ -1,0 +1,17 @@
+set serverout on
+
+begin
+for i in 
+    (select owner
+    , constraint_name
+    , table_name
+    , constraint_type
+    , status
+    From dba_constraints 
+    where table_name = 'CLASS_PRIVILEGES'
+    and owner='BPMMGR') 
+LOOP
+DBMS_OUTPUT.PUT_LINE  ('alter table '|| i.owner ||'.'||i.table_name||' disable constraint '||i.constraint_name||';');
+end loop;
+end;
+/

@@ -1,0 +1,139 @@
+Documentation of BUG 20539050
+
+Errors Encountered when Opening the database
+
+Database mounted.
+ORA-01092: ORACLE instance terminated. Disconnection forced
+ERROR at line 1:
+ORA-00942: table or view does not exist
+ORA-06512: at "SYS.DBMS_SQL", line 1185
+ORA-06512: at line 98
+
+
+
+
+ORA-14695: MAX_STRING_SIZE migration is incomplete
+Process ID: 7679
+Session ID: 357 Serial number: 51416
+
+Apply oracle patch 20539050
+
+- As part of the pre-requisite of applying this particular one off patch, you will have to apply PSU release of January 2017 (24732082). 
+	As such, if you have gone past this point e.g you are currently patched on the latest release, then you will to rollback all of it 
+	just to be able to apply the January Patch.
+	
+- Rollback the latest patch (October 2017) along with patchsets that is required before being able to apply patch (24732082)
+	cd /oracle/oga_db_backups/files/patches/October_2017_ProactiveBundlePatch/26635880/26717470
+	/oracle/APO/rollback_upgrade.pl --id 26717470
+	
+	/oracle/oga_db_backups/files/patches/one-off-patch_18795927/18795927
+	/oracle/APO/rollback_upgrade.pl --id 18795927
+	
+	
+	cd /oracle/oga_db_backups/files/patches/one-off-patch_18795927/pre-req_18795927/25433352/25397136
+	/oracle/APO/rollback_upgrade.pl --id 25397136
+		
+	
+- Apply PSU patch 24732082
+	cd /oracle/oga_db_backups/files/patches/20539050_utl32k_bug/pre-req_24732082/24732082
+	/oracle/APO/oracle_patcher_ds_upgrade.pl 
+	
+- Apply one-off-patch 20539050
+	cd /oracle/oga_db_backups/files/patches/20539050_utl32k_bug/20539050
+	/oracle/APO/oracle_patcher_ds_upgrade.pl
+-------------------------Database EDU
+	
+set serveroutput on size unlimited
+spool outputfile
+execute hcheck.full
+spool off
+
+
+@haout
+@hcheck	
+
+
+
+
+HCKE-0019: Orphaned TAB$ (no SEG$) (Doc ID 1360889.1)
+ORPHAN TAB$: OBJ=106349 DOBJ=106349 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106346 DOBJ=106346 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106343 DOBJ=106343 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106338 DOBJ=106338 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106335 DOBJ=106335 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106326 DOBJ=106326 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106298 DOBJ=106298 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106297 DOBJ=106297 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106296 DOBJ=106296 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106295 DOBJ=106295 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+ORPHAN TAB$: OBJ=106294 DOBJ=106294 TS=0 RFILE/BLOCK=0 0 BOBJ#=
+^- May be OK. Needs manual check
+
+
+col owner for a20
+col object_name for a20
+col object_type for a20
+select owner
+, object_name
+, object_id 
+, object_type
+from dba_objects 
+where object_id = &culprit
+
+OWNER                OBJECT_NAME           OBJECT_ID OBJECT_TYPE
+-------------------- -------------------- ---------- --------------------
+SQLTXPLAIN           TRCA_PARAMETER2          106349 TABLE
+SQLTXPLAIN           TRCA_IND_COLUMNS         106346 TABLE
+SQLTXPLAIN           TRCA_TAB_COLS            106343 TABLE
+SQLTXPLAIN           TRCA_INDEXES             106338 TABLE
+SQLTXPLAIN           TRCA_TABLES              106335 TABLE
+SQLTXPLAIN           TRCA_OBJECTS             106326 TABLE
+SQLTXPLAIN           TRCA_EXTENTS_LM          106298 TABLE
+SQLTXPLAIN           TRCA_EXTENTS_DM          106297 TABLE
+SQLTXPLAIN           TRCA_EXTENTS_DM          106297 TABLE
+SQLTXPLAIN           TRCA_SEGMENTS            106296 TABLE
+SQLTXPLAIN           TRCA_FILE                106295 TABLE
+SQLTXPLAIN           TRCA_CONTROL             106294 TABLE
+
+drop user SQLTXPLAIN cascade;
+
+
+
+
+Restore database
+
+run {
+set until time "to_date('19-12-2017 01:00:00', 'dd-mm-yyyy hh24:mi:ss')";
+restore database;
+recover database;
+alter database open resetlogs;
+}
+
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+1       1       EDUDEV3  3695750146       PARENT  1          07-JUL-14
+2       2       EDUDEV3  3695750146       PARENT  1594143    13-OCT-17
+3       3       EDUDEV3  3695750146       PARENT  83735817140 16-OCT-17
+4       4       EDUDEV3  3695750146       PARENT  83738642110 19-OCT-17
+5       5       EDUDEV3  3695750146       CURRENT 83763088279 20-DEC-17
+
+reset database to incarnation 4;
+
+startup nomount;
+
+
+	
+	

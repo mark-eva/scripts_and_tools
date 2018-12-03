@@ -1,0 +1,14 @@
+-- Patch Checker
+$ORACLE_HOME/OPatch/opatch lsinventory
+
+-- Checking patch compatibility
+$ORACLE_HOME/OPatch/opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+--Apply patch using Opatch
+$ORACLE_HOME/OPatch/opatch apply
+
+--Apply datapatch
+$ORACLE_HOME/OPatch/datapatch -verbose
+
+--Rollback 
+$ORACLE_HOME/OPatch/rollback -id <patch_number_id>

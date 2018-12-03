@@ -1,0 +1,183 @@
+Building ASH TOOLKIT
+
+--------------------------------------------------------------------------
+Understanding ASH Data
+--------------------------------------------------------------------------
+
+set tab off
+set verify on 
+selt linesize 250
+col minSt format a25
+col maxSt format a25
+
+
+
+select count (*) from v$active_session_history;
+
+select min (sample_time) minSt
+, max (sample_time) maxSt
+from session_snaps
+
+select distinct session_state,
+session_type
+from v$active_session_history
+
+select sum(decode(session_state, 'ON CPU', 1,0)) oncpu
+, sum(decode(session_state, 'ON CPU', 1,0)) waiting
+from v$active_session_history
+
+
+-- ONCPU or WAITING sessions for the last 3 minutes
+
+select sum(decode(session_state, 'ON CPU', 1,0)) oncpu
+, sum(decode(session_state, 'ON CPU', 1,0)) waiting
+from v$active_session_history 
+where sample_time >= current_timestamp - interval '3' minute
+
+--------------------------------------------------------------------------
+Common Defines
+--------------------------------------------------------------------------
+
+def datasource=session_snaps
+
+
+def dbahistdetails=' and dbid=<dbid> and instance_name=1'
+def dbahistdetails=' and 1=1'
+
+def timingdetails="sample_time >= current_timestamp - interval '2' minute"
+def timingdetails="sample_time between to_date('30-Jan-2018 15:30', 'DD-Mon-YYYY HH24:MI') and to_date('30-Jan-2018 16:00', 'DD-Mon-YYYY HH24:MI')"
+
+def timingdetails="1=1"
+
+--------------------------------------------------------------------------
+Common Column Formats
+--------------------------------------------------------------------------
+
+col sql_id format a15
+col session_type format a15
+col program for a25 trunc
+col module format a15 trunc
+col action format a25
+col sid format a25
+col sid format 9999
+col event format a25 trunc
+col blocking_session heading 'BLK SID'
+col session_state format a13
+
+--------------------------------------------------------------------------
+-- Top Anything
+--------------------------------------------------------------------------
+-- What is the top SQL?
+-- WHat is the top SQL when waiting?
+-- What is the top session? (w/session_type, program)
+-- WHat is the top session when waiting? (w/session_state,sql_id,event)
+
+
+def ashCols='SQL_ID'
+def ashCols="event"
+def ashCols="event, sql_id"
+def ashCols='session_state, SQL_ID'
+def ashCols='program'
+def ashCols='module, action'
+def ashCols='session_state, SQL_ID, event'
+def ashCols='session_id, session_state, SQL_ID, event, wait_class'
+def ashCols='session_state, SQL_ID, event'
+
+def ashstate='ON CPU'
+def ashstate='WAITING'
+def ashstate='%'
+
+
+select count (*), 
+&ashCols
+from &datasource
+where &timingdetails
+	  &dbahistdetails
+	and session_state like '&ashstate'
+group by &ashCols
+order by 1 desc
+/
+
+
+--------------------------------------------------------------------------
+-- ASH Timeline Script
+--------------------------------------------------------------------------
+-- timeline session 50 (w/event, sql_id, blocking_session)
+-- timelines ession 170 (w/event, program)
+
+def ashCols='event, sql_id, blocking_session, program, module, machine'
+def ashCols='event, sql_id, program'
+def ashCols='event,program'
+
+def ashWhere='session_id=17'
+def ashWhere='session_id=1437'
+
+
+select 
+ to_char (sample_time, 'DD HH24:MI:SS') DT
+, session_id sid
+, session_state
+, &ashCols
+from &datasource
+where &timingdetails
+&dbahistdetails
+and &ashWhere
+order by 1,3
+/
+
+--------------------------------------------------------------------------
+-- Profile Anything
+--------------------------------------------------------------------------
+-- p1. profile all session (session_id %)
+-- p2. porfile the wait situation for all sessions (session_id %)
+-- p1/2. profile session 50 (session_id 50)
+-- p1/2. profile sql_id (sql_id abc123)
+
+def ashcolkey=session_id
+def ashcolval='%'
+def ashcolval='50'
+
+def ashcolkey=sql_id
+def ashcolkey=''
+
+set verify on
+set verify off
+
+
+select totAS,
+	oncpu/(oncpu+waiting) cpuPct,
+	waiting/(oncpu+waiting) waitingPct,
+	(userIO+sysIO)/waiting ioPct,
+	(waiting-userIO-sysIO)/waiting otherPct
+from
+(
+	select 
+		count (*) totAS,
+		sum (decode(session_state, 'ON CPU', 1,0)) oncpu,
+		sum (decode(session_state,'WAITING',1,0)) waiting,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) userIO,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) sysIO
+	from &datasource
+	where &timingdetails
+	and &ashcolkey like '&ashcolval%'
+)
+/
+select count(*) , event
+from  &datasource
+where &timingdetails
+	  &dbahistdetails
+	and session_state ='WAITING'
+	and &ashcolkey like '&ashcolval%'
+group by event
+order by 1 desc
+
+Summary:
+- Profile anything
+- Top Anything
+- Time-line session
+
+-- To do next
+Download and experiement blood hound toolkit for chart and graphics
+Best thing is its is free
+
+

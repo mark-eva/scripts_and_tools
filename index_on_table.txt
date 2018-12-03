@@ -1,0 +1,5 @@
+-- Identify indexes on a table 
+
+Select table_owner, table_name, index_name, column_name FROM dba_ind_columns
+where TABLE_OWNER = 'FOXMGR'
+and TABLE_NAME = 'FOX_REQUESTS'

@@ -1,0 +1,1 @@
+select machine, count(*) from v$session group by machine;

@@ -1,0 +1,73 @@
+How to extend mountpoint 
+	https://confluence.fivium.local/pages/editpage.action?pageId=2163347
+
+/dev/mapper/VGoracle-LVoracle   /oracle ext4    defaults        1 
+
+
+lsblk
+
+	NAME                         MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+xvdb                         202:16   0  200G  0 disk
+└─xvdb1                      202:17   0  200G  0 part
+  └─VGoracle-LVoracle (dm-2) 253:2    0  200G  0 lvm  /oracle
+xvdc                         202:32   0  200G  0 disk
+xvda                         202:0    0   30G  0 disk
+├─xvda1                      202:1    0  512M  0 part /boot
+└─xvda2                      202:2    0 29.5G  0 part
+  ├─VGOS-LVroot (dm-0)       253:0    0 11.5G  0 lvm  /
+  ├─VGOS-LVswap (dm-1)       253:1    0    2G  0 lvm  [SWAP]
+  ├─VGOS-LVvar (dm-3)        253:3    0    4G  0 lvm  /var
+  ├─VGOS-LVusr (dm-4)        253:4    0    4G  0 lvm  /usr
+  └─VGOS-LVhome (dm-5)       253:5    0    8G  0 lvm  /home
+  
+ PVcreate
+	 pvcreate /dev/xvdc -- mark xvdc as a physical volume 
+	 
+
+	 
+vgdisplay -- further verification of existing volume group layout
+
+Extend the volume
+	vgextend 
+	syntax : vgextend VolumeGroupName PhysicalDevicePath
+	vgextend VGoracle /dev/xvdc
+	
+vgdisplay 
+
+
+ lvdisplay /dev/VGoracle/LVoracle
+  --- Logical volume ---
+  LV Path                /dev/VGoracle/LVoracle
+  LV Name                LVoracle
+  VG Name                VGoracle
+  LV UUID                qarUuH-E2DY-RSkb-5mo8-OZit-NxUa-HTzAKl
+  LV Write Access        read/write
+  LV Creation host, time edu-dev-db20.decc.local, 2017-06-09 14:18:16 +0100
+  LV Status              available
+  # open                 1
+  LV Size                199.97 GiB
+  Current LE             6399
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:2
+
+
+lvdisplay
+
+
+Finding out extents to size ration -- vgdisplay
+ Free  PE / Size       6399 / 199.97 GiB
+
+lvextend --help
+
+Extending lvm
+lvextend -l +6399 -r /dev/VGoracle/LVoracle
+
+
+	 
+	 
+
+
+

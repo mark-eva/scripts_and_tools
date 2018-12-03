@@ -1,0 +1,116 @@
+IO data collection
+
+#=======================#	
+|     Memset			|
+#=======================#
+
+ECNRLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	23.4000231     3533.4         15.2738489      7304.83016
+	
+ECDLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	290.646309    25702.4         64.0146699      8747.06125
+
+ECDCMSLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	125.504829     8725.6         50.2285115       4806.4938
+	
+
+ECDEFLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	401.655771       5982         101.920329      7471.86749
+
+ECDITLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	120.653063     6838.4         226.469674      4310.47885
+	
+#=======================#	
+|     OGA				|
+#=======================#
+
+
+MMOLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	1047.80507    21169.4         271.737251      10774.6345
+	
+
+EDULV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	2384.74481    27015.4         877.570648       17690.973
+	
+ETLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	84.2018143      18369         41.9013803      7212.38671
+
+#=======================#	
+|     UKCLOUD			|
+#=======================#
+ECSCOLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	65.3508443    12858.8         26.0755563      6222.11482
+
+	
+ECHMRCLV
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	123.701563     4023.8         10.3051668       279.57737
+	
+ECPOLLV1
+
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	66.0795497     2151.2          5.3277478       156.83632
+	
+
+ECHMTLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	251.430144       3759         42.7864704      2141.08406
+
+
+ECMODLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	392.186241    17836.8         22.5422408      445.898752
+	
+ECBISLV1
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	378.154972     3756.4          25.947307      511.651021
+	
+	
+ICMSLV1
+
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	60.9445157      12834         85.3369379      7389.17745
+	
+SPLV1
+
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	337.267233    14521.4         438.223629      6595.73883
+	
+SSLV1
+
+	AVERAGE_IO    PEAK_IO AVERAGE_THROUGHPUT PEAK_THROUGHPUT
+	---------- ---------- ------------------ ---------------
+	44.2865203     2370.4         82.0743992       9105.6554
+	
+
+
+
+	
+
+
+

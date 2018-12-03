@@ -1,0 +1,39 @@
+-- Overall size of logs in the database
+
+
+COLUMN TABLE_NAME FORMAT A32
+COLUMN OBJECT_NAME FORMAT A32
+COLUMN OWNER FORMAT A10
+
+
+select sum (Meg /1024) GB from 
+(
+SELECT
+   owner, table_name, TRUNC(sum(bytes)/1024/1024) Meg
+FROM
+(SELECT segment_name table_name, owner, bytes
+ FROM dba_segments
+ WHERE segment_type = 'TABLE'
+ UNION ALL
+ SELECT i.table_name, i.owner, s.bytes
+ FROM dba_indexes i, dba_segments s
+ WHERE s.segment_name = i.index_name
+ AND   s.owner = i.owner
+ AND   s.segment_type = 'INDEX'
+ UNION ALL
+ SELECT l.table_name, l.owner, s.bytes
+ FROM dba_lobs l, dba_segments s
+ WHERE s.segment_name = l.segment_name
+ AND   s.owner = l.owner
+ AND   s.segment_type = 'LOBSEGMENT'
+ UNION ALL
+ SELECT l.table_name, l.owner, s.bytes
+ FROM dba_lobs l, dba_segments s
+ WHERE s.segment_name = l.index_name
+ AND   s.owner = l.owner
+ AND   s.segment_type = 'LOBINDEX')
+WHERE table_name in ('BPM_LOG_STEP','BPM_LOGS','FOX_ENGINE_REQUESTS','FOX_REQUEST_LOG','FOX_THREAD_TRACKS','REST_REQUEST_LOG','FOX_REQUESTS','FOX_THREAD_LOG','SEARCH_PARAM_LOGS','SEARCH_QUERY_LOGS')
+GROUP BY table_name, owner
+HAVING SUM(bytes)/1024/1024 > 10  /* Ignore really small tables */
+ORDER BY SUM(bytes) desc
+)

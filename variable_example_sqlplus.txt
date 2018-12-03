@@ -1,0 +1,14 @@
+Example of declaring variables in sqlplus
+
+
+var wua_id number
+var reference varchar2(30)
+
+
+exec :wua_id := 38228
+exec :reference := 'CON/2018/48'
+
+-- Fivium specific. Setting up security stuff
+
+
+exec bpmmgr.security.setGranteeUrefList( '38228WUA')

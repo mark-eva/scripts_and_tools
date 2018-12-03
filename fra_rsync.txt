@@ -1,0 +1,43 @@
+#!/bin/sh
+
+LOG_TO_FILE='/oracle/db_backup/dbsync/logs/fra_rsync/rsync_database_files.log'
+
+function log_timestamp {
+    echo " " >> "$LOG_TO_FILE"
+    echo `date` >> "$LOG_TO_FILE"
+    echo " " >> "$LOG_TO_FILE"
+}
+
+log_timestamp
+#
+# Exit if backup already running
+#
+RUNNING=`ps -ef | grep "$0" | grep -v grep | wc -l`
+
+if [ $RUNNING -gt 2 ]
+then
+    echo "`ps -ef | grep $0 | grep -v grep`"
+    echo "Running count : $RUNNING, Script $0 is running, time to exit!"
+    exit 1
+fi
+
+COPY_TO_SERVER='fiv-dev-dbdg1.decc.local'
+
+FILES_TO_COPY='/oracle/fra/EC3DEV1/archivelog/*'
+COPY_TO_DIR='/oracle/db_backup/files/EC3DEV1/fiv-dev-db8.fivium.local/EC3DEV1_ARCHIVELOGS/'
+
+echo "syncing files from $FILES_TO_COPY to ${COPY_TO_SERVER}:${COPY_TO_DIR}" >> "$LOG_TO_FILE"
+rsync -av --update $FILES_TO_COPY $COPY_TO_SERVER:$COPY_TO_DIR >> $LOG_TO_FILE 2>&1
+
+log_timestamp
+
+COPY_TO_SERVER='fiv-dev-dbdg1.decc.local'
+
+FILES_TO_COPY='/oracle/fra/EC3ST1/archivelog/*'
+COPY_TO_DIR='/oracle/db_backup/files/EC3ST1/fiv-dev-db8.fivium.local/EC3ST1_ARCHIVELOGS'
+
+echo "syncing files from $FILES_TO_COPY to ${COPY_TO_SERVER}:${COPY_TO_DIR}" >> "$LOG_TO_FILE"
+rsync -av --update $FILES_TO_COPY $COPY_TO_SERVER:$COPY_TO_DIR >> $LOG_TO_FILE 2>&1
+
+log_timestamp
+

@@ -1,0 +1,354 @@
+-- Further MMO reduction on table sizing 
+ 
+
+
+SELECT xdd.title, round(sum(dd.secure_lob_ref.get_size())/1024/1024) size_mb, count(*) doc_count
+FROM decmgr.xview_document_data xdd
+JOIN decmgr.document_data dd ON xdd.dd_id = dd.id
+WHERE rownum < 1000
+GROUP BY xdd.title
+/
+SELECT fft.target_title
+, round(sum(fv.secure_lob_ref.get_size())/1024/1024) size_mb
+, count(*) file_count
+FROM decmgr.file_folder_targets fft
+JOIN decmgr.file_versions fv ON fv.fft_id = fft.id
+WHERE rownum < 1000
+GROUP BY fft.target_title
+/
+
+description:
+
+those two queries should tell you 
+1) the number of documents, licences, pdf copies etc stored and their size and 
+2) the number of uploaded files and their size
+
+the two sizes together should sum to the table size (or else we're not counting everything)
+in the absence of this data in an easy to find table you might make oracle read quite a lot of data, so don't run them on prod
+of course when you're happy you can remove the rownum restriction to get all the data
+
+Testing it on Dev
+
+MMODEV1 current size
+
+511,881,011,200    569,260,269,568
+
+Log size: 123 GB 
+ 
+1st query Sample Output:
+
+	TITLE                                                 SIZE_MB  DOC_COUNT
+	-------------------------------------------------- ---------- ----------
+	Portal Payments Invoice                                    13        188
+	MMO Scan Sheet (Attach To Application)                      6         76
+	Decision Letter                                            18        393
+	Marine Licence                                             30        318
+	Schedule Document                                          17         19
+	Response Report                                             1          5
+
+Sample output without rownum < 1000 
+
+
+SELECT xdd.title, round(sum(dd.secure_lob_ref.get_size())/1024/1024) size_mb, count(*) doc_count
+FROM decmgr.xview_document_data xdd
+JOIN decmgr.document_data dd ON xdd.dd_id = dd.id
+GROUP BY xdd.title
+order by size_mb desc
+
+	TITLE                                                 SIZE_MB  DOC_COUNT
+	-------------------------------------------------- ---------- ----------
+	Decision Letter                                          3544      13170
+	Marine Licence Schedule Document                         1600       1253
+	Schedule Document                                         926        815
+	Marine Licence                                            917      12945
+	Portal Payments Invoice                                   142       2516
+	Response Report                                           121        305
+	Notification Letter                                        30        105
+	MMO Scan Sheet (Attach To Application)                     17        201
+	Return Letter                                              15       1890
+	Wildlife Licence                                           12        189
+	EPS Schedule Document                                       3         32
+	Returns                                                     2        210
+	Wildlife EPS Licence Schedule Document                      2         32
+	Wildlife SciCon Licence Schedule Document                   1         10
+	Response Schedule                                           1          8
+	Document Signing Stub                                       1         42
+	SciCon Schedule Document                                    0          1
+
+	
+-- second query
+
+SELECT fft.target_title
+, round(sum(fv.secure_lob_ref.get_size())/1024/1024) size_mb
+, count(*) file_count
+FROM decmgr.file_folder_targets fft
+JOIN decmgr.file_versions fv ON fv.fft_id = fft.id
+WHERE rownum < 1000
+GROUP BY fft.target_title
+order by size_mb desc
+
+	TARGET_TITLE                                                                                            SIZE_MB FILE_COUNT
+	---------------------------------------------------------------------------------------------------- ---------- ----------
+	Case Note Document                                                                                           28        310
+	Environmental Statement Document                                                                             15        167
+	Documents of Interest                                                                                        13        140
+	Method Statement Documents                                                                                   11        126
+	Supporting Documents                                                                                          5         53
+	Natural England / JNCC Document                                                                               4         45
+	Publicity Document                                                                                            3         28
+	Consulted Organisations                                                                                       3         35
+	Water Framework Directive Documents                                                                           3         28
+	HRA Assessment Decision Documents                                                                             1          6
+	FIR Document                                                                                                  1          6
+	Habitat Regulation Assessment                                                                                 1         14
+	Public Consultation Meeting Documents                                                                         1          7
+	EIA Consent Decision Documents                                                                                1          9
+	HRA Final Assessment Documents                                                                                1          6
+	Public Comment Documents                                                                                      1          9
+	EIA Scoping Opinion Documents                                                                                 0          3
+	EIA Public Notice Documents                                                                                   0          3
+	Schedule Document                                                                                             0          4
+
+2nd query sample output without rownum < 1000 
+
+SELECT fft.target_title
+, round(sum(fv.secure_lob_ref.get_size())/1024/1024) size_mb
+, count(*) file_count
+FROM decmgr.file_folder_targets fft
+JOIN decmgr.file_versions fv ON fv.fft_id = fft.id
+GROUP BY fft.target_title
+order by size_mb desc
+
+
+TARGET_TITLE                                                                                            SIZE_MB FILE_COUNT
+---------------------------------------------------------------------------------------------------- ---------- ----------
+Case Note Document                                                                                          874       9780
+Public Register Document                                                                                    631       7061
+Legacy Licence Document                                                                                     592       6621
+Published Response Document                                                                                 409       4582
+Supporting Document                                                                                         400       4482
+Documents of Interest                                                                                       322       3609
+Environmental Statement Document                                                                            295       3304
+Method Statement Documents                                                                                  243       2721
+Publicity Document                                                                                          201       2255
+Supporting Documents                                                                                        154       1723
+Schedule Document                                                                                           102       1145
+Natural England / JNCC Document                                                                              74        823
+Consulted Organisations                                                                                      49        552
+Water Framework Directive Documents                                                                          39        434
+Response Report                                                                                              35        389
+Habitat Regulation Assessment                                                                                32        353
+FIR Document                                                                                                 30        338
+Public Comment Documents                                                                                     17        192
+Public Consultation Meeting Documents                                                                        14        162
+Strategic Appraisal Document                                                                                  9        102
+EIA Consent Decision Documents                                                                                7         78
+HRA Final Assessment Documents                                                                                6         70
+HRA Assessment Decision Documents                                                                             5         58
+Evidence QA Document                                                                                          5         54
+Redacted Document                                                                                             5         57
+EIA Scoping Opinion Documents                                                                                 4         45
+EIA Public Notice Documents                                                                                   4         50
+Reference Form                                                                                                3         37
+EPS Schedule Document                                                                                         3         32
+Habitat Regulations Documents                                                                                 2         22
+Notice of Intention Documents                                                                                 2         23
+General Practitioner Note Document                                                                            2         24
+Death Certificate Document                                                                                    2         24
+Inspection Document                                                                                           1         15
+Tracer Components                                                                                             1         12
+Enforcement Action Document                                                                                   1          9
+Appeal Information Document                                                                                   0          1
+Appeal Response Document                                                                                      0          2
+Appeal Request Document                                                                                       0          1
+Exempt Tracer Component Documents                                                                             0          1
+Wreck Protection Documents                                                                                    0          1
+SciCon Schedule Document                                                                                      0          1
+Coastal Impact Study Document                                                                                 0          1
+Impact Assessment Documents                                                                                   0          2
+Public Inquiry Supporting Documents                                                                           0          1
+
+
+--  Size of SECUREMGR.SECURE_LOB_DATA 
+
+select sum (Meg /1024) GB from 
+(
+SELECT
+   owner, table_name, TRUNC(sum(bytes)/1024/1024) Meg
+FROM
+(
+	 SELECT segment_name table_name, owner, bytes
+	 FROM dba_segments
+	 WHERE segment_type = 'TABLE'
+	 UNION ALL
+	 SELECT i.table_name, i.owner, s.bytes
+	 FROM dba_indexes i, dba_segments s
+	 WHERE s.segment_name = i.index_name
+	 AND   s.owner = i.owner
+	 AND   s.segment_type = 'INDEX'
+	 UNION ALL
+	 SELECT l.table_name, l.owner, s.bytes
+	 FROM dba_lobs l, dba_segments s
+	 WHERE s.segment_name = l.segment_name
+	 AND   s.owner = l.owner
+	 AND   s.segment_type = 'LOBSEGMENT'
+	 UNION ALL
+	 SELECT l.table_name, l.owner, s.bytes
+	 FROM dba_lobs l, dba_segments s
+	 WHERE s.segment_name = l.index_name
+	 AND   s.owner = l.owner
+	 AND   s.segment_type = 'LOBINDEX'
+)
+WHERE table_name = 'SECURE_LOB_DATA'
+GROUP BY table_name, owner
+HAVING SUM(bytes)/1024/1024 > 10  /* Ignore really small tables */
+ORDER BY SUM(bytes) desc
+)
+
+Output:
+
+OWNER                          TABLE_NAME                            MEG
+------------------------------ ------------------------------ ----------
+SECUREMGR                      SECURE_LOB_DATA                    138105
+
+Summary:
+
+
+
+Query 1
+select sum (size_mb /1024) total_size_gb from 
+(
+	SELECT xdd.title
+	, round(sum(dd.secure_lob_ref.get_size())/1024/1024) size_mb
+	, count(*) doc_count
+	FROM decmgr.xview_document_data xdd
+	JOIN decmgr.document_data dd ON xdd.dd_id = dd.id
+	GROUP BY xdd.title
+	order by size_mb desc
+) group by 1
+order by 1 desc 
+
+Query 2
+
+select sum (size_mb /1024) total_size_gb from 
+(   
+	SELECT fft.target_title
+	, round(sum(fv.secure_lob_ref.get_size())/1024/1024) size_mb
+	, count(*) file_count
+	FROM decmgr.file_folder_targets fft
+	JOIN decmgr.file_versions fv ON fv.fft_id = fft.id
+	GROUP BY fft.target_title
+	order by size_mb desc
+) group by 1
+order by 1 desc
+
+Summary sizes
+
+first Query
+	DECMGR.DOCUMENT_DATA: 31 MB
+	XVIEW_DOCUMENT_DATA: 0
+	
+second query
+	FILE_FOLDER_TARGETS: 15 MB
+	FILE_VERSIONS: 187 MB	
+
+1st query total: 7.1 GB
+2nd query total: 4.4 GB
+
+MMO live
+
+
+first query result: 
+	TITLE                                                 SIZE_MB  DOC_COUNT
+	-------------------------------------------------- ---------- ----------
+	Decision Letter                                          6378      23106
+	Marine Licence Schedule Document                         4641       3635
+	Marine Licence                                           1497      29118
+	Schedule Document                                         926        815
+	Response Schedule                                         186        468
+	Returns                                                   154       5577
+	Portal Payments Invoice                                   142       2665
+	Response Report                                           136        312
+	Notification Letter                                        38        114
+	Wildlife EPS Licence Schedule Document                     32         77
+	Return Letter                                              28       3501
+	Wildlife Licence                                           20        291
+	MMO Scan Sheet (Attach To Application)                     17        201
+	Wildlife SciCon Licence Schedule Document                   7         25
+	EPS Schedule Document                                       3         32
+	Document Signing Stub                                       0         24
+	SciCon Schedule Document                                    0          1
+	
+
+	TOTAL_SIZE_GB
+	-------------
+	   13.8720703
+	   
+2nd query result
+	TARGET_TITLE                                                                                            SIZE_MB FILE_COUNT
+	---------------------------------------------------------------------------------------------------- ---------- ----------
+	Public Register Document                                                                                  17941       7061
+	Environmental Statement Document                                                                          17788       3304
+	Documents of Interest                                                                                      7955       3609
+	Case Note Document                                                                                         7823       9780
+	Supporting Documents                                                                                       4970       1723
+	Method Statement Documents                                                                                 4469       2721
+	Publicity Document                                                                                         2991       2255
+	Supporting Document                                                                                        2536       9718
+	FIR Document                                                                                               1532        338
+	Legacy Licence Document                                                                                    1464       6621
+	Schedule Document                                                                                          1236       1145
+	Published Response Document                                                                                 974       4582
+	Water Framework Directive Documents                                                                         844        434
+	Habitat Regulation Assessment                                                                               700        353
+	Strategic Appraisal Document                                                                                551        102
+	Natural England / JNCC Document                                                                             551        823
+	Evidence QA Document                                                                                        433         54
+	Consulted Organisations                                                                                     352        552
+	Public Comment Documents                                                                                    291        192
+	Inspection Document                                                                                         236         15
+	Public Consultation Meeting Documents                                                                       197        162
+	Redacted Document                                                                                           106         57
+	HRA Final Assessment Documents                                                                               84         70
+	Response Report                                                                                              65        389
+	Habitat Regulations Documents                                                                                63         22
+	HRA Assessment Decision Documents                                                                            51         58
+	EIA Public Notice Documents                                                                                  47         50
+	EIA Consent Decision Documents                                                                               44         78
+	EIA Scoping Opinion Documents                                                                                12         45
+	Reference Form                                                                                               11         37
+	Death Certificate Document                                                                                   11         24
+	Notice of Intention Documents                                                                                 7         23
+	General Practitioner Note Document                                                                            6         24
+	Impact Assessment Documents                                                                                   4          2
+	EPS Schedule Document                                                                                         3         32
+	Coastal Impact Study Document                                                                                 1          1
+	Enforcement Action Document                                                                                   1          9
+	Public Inquiry Supporting Documents                                                                           1          1
+	SciCon Schedule Document                                                                                      0          1
+	Appeal Response Document                                                                                      0          2
+	Tracer Components                                                                                             0         12
+	Appeal Request Document                                                                                       0          1
+	Exempt Tracer Component Documents                                                                             0          1
+	Wreck Protection Documents                                                                                    0          1
+	Appeal Information Document                                                                                   0          1
+	
+	TOTAL_SIZE_GB
+	-------------
+	   74.5615234
+
+	Query 1 plus Query 2 Total
+	87 GB
+	
+
+	
+
+
+
+
+
+
+
+
+
+

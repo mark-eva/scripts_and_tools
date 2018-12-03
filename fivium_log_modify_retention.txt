@@ -1,0 +1,15 @@
+
+-- Fivium Log retention
+
+update dbamgr.table_housekeeping set retention_days =30 where owner ='fox5mgr' and table_name='fox_thread_tracks';
+update dbamgr.table_housekeeping set retention_days =30 where owner ='fox5mgr' and table_name='fox_engine_requests';
+update dbamgr.table_housekeeping set retention_days =365 where owner ='fox5mgr' and table_name='fox_request_log';
+update dbamgr.table_housekeeping set retention_days =365 where owner ='fox5mgr' and table_name='rest_request_log';
+update dbamgr.table_housekeeping set retention_days =365 where owner ='foxmgr' and table_name='search_query_logs';
+update dbamgr.table_housekeeping set retention_days =30 where owner ='foxmgr' and table_name='fox_thread_log';
+update dbamgr.table_housekeeping set retention_days =365 where owner ='foxmgr' and table_name='fox_requests';
+update dbamgr.table_housekeeping set retention_days =364 where owner ='foxmgr' and table_name='search_param_logs';
+update dbamgr.table_housekeeping set retention_days =30 where owner ='bpmmgr' and table_name='bpm_log_step';
+update dbamgr.table_housekeeping set retention_days =30 where owner ='bpmmgr' and table_name='bpm_logs';
+
+commit;

@@ -1,0 +1,7 @@
+Note: This procedure allows you to compare the estimated row againts the actual rows
+
+-- Add the hint
+/*+ GATHER_PLAN_STATISTICS */
+
+-- Get the output
+SELECT * FROM table(DBMS_XPLAN.DISPLAY_CURSOR(FORMAT=>'ALLSTATS LAST'));

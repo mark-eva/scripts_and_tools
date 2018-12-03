@@ -1,0 +1,31 @@
+-- Monitor Datapump process
+
+col username for a20
+col opname for a20
+col TARGET_DESC for a10
+set wrap off
+
+alter session set nls_date_format = 'dd-mm-yyyy hh24:mi';
+select username
+ ,opname
+ ,target_desc
+ ,sofar 
+ ,totalwork
+ ,(sofar/totalwork) * 100 done
+ ,sysdate + TIME_REMAINING/3600/24 end_at
+ ,message 
+from V$SESSION_LONGOPS 
+where username = 'DATAPUMPMGR';
+
+
+-- Check if datapump operation is stuck at something
+
+col owner_name for a20
+col operation for a20 
+col job_name for a20
+col datapump_sessions for a20
+col job_mode for a25
+select * from dba_datapump_jobs;
+
+
+

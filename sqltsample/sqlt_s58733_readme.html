@@ -1,0 +1,429 @@
+<html>
+<!-- $Header: 215187.1 sqlt_s58733_readme.html 12.1.160429 2017/05/26 abel.macias $ -->
+<!-- Copyright (c) 2000-2015, Oracle Corporation. All rights reserved. -->
+<!-- Author: abel.macias@oracle.com -->
+<head>
+<title>sqlt_s58733_readme.html</title>
+<style type="text/css">
+body {font:10pt Arial, Helvetica, Verdana, Geneva, sans-serif; color:Black; background:White;}
+a {font-weight:bold; color:#663300;}
+pre {font:8pt Monaco, "Courier New", Courier, monospace; margin:1em 8em 1.5em 4em; padding:1em 0 1em 4em; border:1px solid #336699; background-color:#fcfcf0; overflow:auto;}
+code {font:10pt Monaco, "Courier New", Courier, monospace; font-weight:bold;}
+h1 {color:#336699; font-weight:bold; font-size:16pt;}
+h2 {color:#336699; font-weight:bold; font-size:14pt;}
+h3 {color:#336699; font-weight:bold; font-size:12pt;}
+h4 {color:#336699; font-weight:bold; font-size:10pt;}
+table {font-size:8pt; color:Black; background:White;}
+th {font-weight:bold; background:#cccc99; color:#336699; vertical-align:bottom; padding:0.25em 0.25em 0.25em 0.25em;}
+td {text-align:center; background:#fcfcf0; vertical-align:top; padding:0.25em 0.25em 0.25em 0.25em;}
+td.lw {text-align:left; background:white;}
+li {color:#336699; font-weight:bold; font-size:10pt; padding:0.3em 0 0 0;}
+font.crimson {color:crimson;}
+font.red {color:red;}
+font.orange {color:orange;}
+font.green {color:green;}
+</style>
+</head>
+<body>
+<h1>215187.1 SQLT XTRACT 12.1.160429 Report: sqlt_s58733_readme.html</h1>
+<p>Instructions to perform the following:</p>
+<ul>
+<li><a href="#export">Export SQLT repository</a></li>
+<li><a href="#import">Import SQLT repository</a></li>
+<li><a href="#compare">Using SQLT COMPARE</a></li>
+<li><a href="#obj_stats">Restore CBO schema statistics</a></li>
+<li><a href="#sys_stats">Restore CBO system statistics</a></li>
+<li><a href="#sqlt_tc">Implement SQLT Test Case (TC)</a></li>
+<li><a href="#tc">Create TC with no SQLT dependencies</a></li>
+<li><a href="#spd">Restore SQL Plan Directives</a></li>
+<li><a href="#no_hist">Gather CBO statistics without Histograms (using SYS.DBMS_STATS)</a></li>
+<li><a href="#hist">Gather CBO statistics with Histograms (using SYS.DBMS_STATS)</a></li>
+<li><a href="#gen_files">List generated files</a></li>
+</ul>
+
+<a name="export"></a>
+<hr size="3">
+<h2>Export SQLT repository</h2>
+
+<p>Steps:</p>
+<ol>
+<li>Unzip <code>sqlt_s58733_driver.zip</code> in order to get <code>sqlt_s58733_export_parfile.txt</code>.</li>
+<li>Copy <code>sqlt_s58733_export_parfile.txt</code> to SOURCE server (TEXT).</li>
+<li>Execute export on server:</li>
+<p><code>exp sqltxplain parfile=sqlt_s58733_export_parfile.txt</code></p>
+</ol>
+
+<a name="import"></a>
+<hr size="3">
+<h2>Import SQLT repository</h2>
+
+<p>Steps:</p>
+<ol>
+<li>Unzip <code>sqlt_s58733_tc.zip</code> in order to get <code>sqlt_s58733_expdp.dmp</code>.</li>
+<li>Copy <code>sqlt_s58733_exp.dmp</code> to the server (BINARY).</li>
+<li>Execute import on server:</li>
+<p><code>imp sqltxplain FILE=sqlt_s58733_exp.dmp TABLES=sqlt% IGNORE=Y</code></p>
+</ol>
+<p>You can execute <code>sqlt_s58733_import.sh</code> instead.</p>
+
+<a name="compare"></a>
+<hr size="3">
+<h2>Using SQLT COMPARE</h2>
+
+<p>You need to have a set of SQLT files (sqlt_sNNNNN_method.zip) from two executions of the SQLT tool. They can be from any method (XTRACT, XECUTE or XPLAIN) and they can be from the same or different systems. They do not have to be from same release or platform. For example, a SQLT from 10g on Linux and a SQLT from 11g on Unix can be compared.</p>
+
+<p>To use the COMPARE method you need 3 systems: SOURCE1, SOURCE2 and COMPARE. The 3 could all be different, or all the same. For example, SOURCE1 could be PROD, SOURCE2 DEV and COMPARE DEV. In other words, you could do the COMPARE in one of the sources. Or the COMPARE could be done on a 3rd and remote system.</p>
+<p>Basically you need to restore the SQLT repository from both SOURCES into the COMPARE system. In most cases it means "restoring" the SQLT repository from at least one SOURCE into the COMPARE. Once you have both SQLT repositories into the COMPARE system, then you can execute this method.</p>
+
+<p>Steps:</p>
+
+<ol>
+<li>Unzip <code>sqlt_s58733_tc.zip</code> from this SOURCE in order to get <code>sqlt_s58733_expdp.dmp</code>.</li>
+<li>Copy <code>sqlt_s58733_exp.dmp</code> to the server (BINARY).</li>
+<li>Execute import on server:</li>
+<p><code>imp sqltxplain FILE=sqlt_s58733_exp.dmp TABLES=sqlt% IGNORE=Y</code></p>
+<li>Perform the equivalent steps for the 2nd SOURCE if needed. You may want to follow its readme file.</li>
+<li>Execute the COMPARE method connecting into SQL*Plus as SYS. You will be asked to enter which 2 statements you want to compare.</li>
+<p><code>START sqlt/run/sqltcompare.sql </code></p>
+</ol>
+
+<a name="obj_stats"></a>
+<hr size="3">
+<h2>Restore CBO schema statistics</h2>
+
+<p>CBO schema object statistics can be restored from the local SQLT repository, or from an <a href="#import">imported repository</a>. Restoring CBO statistics associates them to existing and compatible schema objects. These objects can be owned by the original schema owner or by a different one. For example, table T is owned by user U in SOURCE and by user TC58733 in TARGET.</p>
+
+<p>When using restore script below, the second parameter allows to remap the schema object statistics to a different user. Be aware that target user and schema objects must exist before executing this script. To restore CBO schema object statistics into the original schema owner(s) pass "null" (or just hit the "Enter" key) when the second parameter is requested.</p>
+
+<p>Steps:</p>
+<ol>
+<li>Execute restore script connecting as SYSDBA:</li>
+<p><code>START sqlt/utl/sqltimp.sql s58733_test_fivdevdb9 TC58733</code></p>
+</ol>
+
+<a name="sys_stats"></a>
+<hr size="3">
+<h2>Restore CBO system statistics</h2>
+<p>Steps:</p>
+<ol>
+<li>Execute restore script connecting as SYSDBA:</li>
+<p><code>START sqlt_s58733_system_stats.sql</code></p>
+</ol>
+
+<a name="sqlt_tc"></a>
+<hr size="3">
+<h2>Implement SQLT Test Case (TC)</h2>
+
+<p>SOURCE and TARGET systems should be similar. Proceed with Preparation followed by Express or Custom mode.</p>
+
+<h3>Preparation</h3>
+
+<ol>
+<li>Unzip <code>sqlt_s58733_tc.zip</code> in server and navigate to TC directory.</li>
+<p><code>unzip sqlt_s58733_tc.zip -d TC58733</code></p>
+<p><code>cd TC58733</code></p>
+</ol>
+
+<h3>Express (XPRESS) mode</h3>
+
+<ol>
+<li>Review and execute <code>xpress.sh</code> from OS or <code>xpress.sql</code> from sqlplus.</li>
+<p>Option 1: <code>./xpress.sh</code></p>
+<p>Option 2: <code>sqlplus / as sysdba @xpress.sql</code></p>
+</ol>
+
+<h3>Custom mode</h3>
+
+<ol>
+<li>Create test case user and schema objects connecting as SYSDBA:</li>
+<p><code>sqlplus / as sysdba</code></p>
+<p><code>START sqlt_s58733_metadata.sql</code></p>
+<li>Purge pre-existing s58733 from local SQLT repository connected as SYSDBA:</li>
+<p><code>START sqlt_s58733_purge.sql</code></p>
+<li><a href="#import">Import SQLT repository for s58733</a> (provide SQLTXPLAIN password):</li>
+<p><code>HOS imp sqltxplain FILE=sqlt_s58733_exp.dmp LOG=sqlt_s58733_imp.log TABLES=sqlt% IGNORE=Y</code></p>
+
+<li><a href="#obj_stats">Restore CBO schema statistics</a> for test case user connected as SYSDBA:</li>
+<p><code>START sqlt_s58733_restore.sql</code></p>
+<li><a href="#sys_stats">Restore CBO system statistics</a> connected as SYSDBA:</li>
+<p><code>START sqlt_s58733_system_stats.sql</code></p>
+<li>Set the CBO environment connecting as test case user TC58733 (include optional test case user suffix):</li>
+<p><code>CONN TC58733/TC58733</code></p>
+<p><code>START sqlt_s58733_set_cbo_env.sql</code></p>
+<li>Execute test case:</li>
+<p><code>START tc.sql</code></p>
+</ol>
+
+
+<a name="tc"></a>
+<hr size="3">
+<h2>Create TC with no SQLT dependencies</h2>
+<p>After <a href="#sqlt_tc">creating a local test case using SQLT files</a>, you can create a stand-alone TC with no dependencies on SQLT.</p>
+
+<p>Steps:</p>
+<ol>
+<li>Export TC schema object statistics to staging table within TC schema:</li>
+<p><code>DELETE TC58733.CBO_STAT_TAB_4TC;<br>
+EXEC SYS.DBMS_STATS.EXPORT_SCHEMA_STATS(ownname => 'TC58733', stattab => 'CBO_STAT_TAB_4TC');</code></p>
+<li>Export TC schema object statistics from staging table:</li>
+<p><code>HOS exp TC58733/TC58733 FILE=cbo_stat_tab_4tc.dmp LOG=cbo_stat_tab_4tc.log TABLES=cbo_stat_tab_4tc STATISTICS=NONE</code></p>
+<li>Review <code>setup.sql</code> script and adjust if needed.</li>
+<li>Review <code>readme.txt</code> file and adjust if needed.</li>
+<li>Create and zip a new directory with the following files:</li>
+<pre>
+CBO schema object statistics dump: cbo_stat_tab_4tc.dmp
+Plan script:                       plan.sql
+Query script:                      q.sql
+Instructions:                      readme.txt
+Setup script:                      setup.sql
+Metadata script:                   sqlt_s58733_metadata.sql
+OPatch (if needed):                sqlt_s58733_opatch.zip
+Set CBO env script (if needed):    sqlt_s58733_set_cbo_env.sql
+System statistics setup:           sqlt_s58733_system_stats.sql
+Test case script:                  tc.sql
+</pre>
+<li>Test your new stand-alone TC following your own <code>readme.txt</code> in another system.</li>
+</ol>
+<p>Note: You may want to use tc_pkg.sql to execute commands above.</p>
+
+<a name="spd"></a>
+<hr size="3">
+<h2>Restore SQL Plan Directives</h2>
+<p>You can restore the SQL Plan Directives for the objects involved in the SQL statement.</p>
+<p>This method works if the same objects exist under the same schema as the source schema. In case you consolidated all the objects under one specific user (ie. when installing
+the TC in a test system) then you will need to remap the SQL Plan Directives in the staging table to such user before restoring them. Like using the following :</p>
+<pre>
+UPDATE SQLTXADMIN.sqlt$_stgtab_directive SET c1 = 'TC58733' WHERE statid='s58733_test_fivdevdb9' and c1 IS NOT NULL;
+COMMIT;
+</pre>
+<p>To restore the The SQL Plan Directives execute from SYS.</p>
+<pre>--
+SET SERVEROUT ON;
+DECLARE
+  x NUMBER;
+BEGIN
+-- this is because DBMS_SPD doesn'like statid not null
+UPDATE SQLTXADMIN.sqlt$_stgtab_directive SET statid = NULL WHERE statid='s58733_test_fivdevdb9';
+COMMIT;
+
+
+   x := SYS.DBMS_SPD.UNPACK_STGTAB_DIRECTIVE (
+    table_name  => 'SQLT$_STGTAB_DIRECTIVE',
+    table_owner => 'SQLTXADMIN');,
+  SYS.DBMS_OUTPUT.PUT_LINE('Directives Unpacked: '||x);
+
+END;
+/
+SET SERVEROUT OFF;
+</pre>
+
+<a name="no_hist"></a>
+<hr size="3">
+<h2>Gather CBO statistics without Histograms (using SYS.DBMS_STATS)</h2>
+
+<p>Use commands below to generate a fresh set of CBO statistics for the schema objects accessed by your SQL. Histograms will be dropped.</p>
+<pre>BEGIN -- generated by SQLT
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"LINK$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"LINK$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE 1',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"OBJ$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"OBJ$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE 1',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"SUM$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"SUM$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE 1',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"USER$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"USER$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE 1',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"USER_EDITIONING$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"USER_EDITIONING$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE 1',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+END;
+/</pre>
+
+<a name="hist"></a>
+<hr size="3">
+<h2>Gather CBO statistics with Histograms (using SYS.DBMS_STATS)</h2>
+
+<p>Use commands below to generate a fresh set of CBO statistics for the schema objects accessed by your SQL. Histograms will be generated for some columns.</p>
+<pre>BEGIN -- generated by SQLT
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"LINK$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"LINK$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE AUTO',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"OBJ$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"OBJ$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE AUTO',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"SUM$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"SUM$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE AUTO',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"USER$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"USER$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE AUTO',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+  SYS.DBMS_STATS.UNLOCK_TABLE_STATS (
+    ownname       => '"SYS"',
+    tabname       => '"USER_EDITIONING$"'
+  );
+  SYS.DBMS_STATS.GATHER_TABLE_STATS (
+    ownname          => '"SYS"',
+    tabname          => '"USER_EDITIONING$"',
+    estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,
+    method_opt       => 'FOR ALL COLUMNS SIZE AUTO',
+    cascade          => TRUE,
+    no_invalidate    => FALSE
+  );
+END;
+/</pre>
+
+<a name="gen_files"></a>
+<hr size="3">
+<h2>List generated files</h2>
+<p>Files generated under current SQL*Plus directory.<br>Not all files may be available.</p>
+<pre>
+sqlt_s58733_main.html
+sqlt_s58733_metadata.sql
+sqlt_s58733_metadata1.sql
+sqlt_s58733_metadata2.sql
+sqlt_s58733_system_stats.sql
+sqlt_s58733_schema_stats.sql
+sqlt_s58733_set_cbo_env.sql
+sqlt_s58733_lite.html
+sqlt_s58733_readme.html
+sqlt_s58733_readme.txt
+sqlt_s58733_tc_script.sql
+sqlt_s58733_tc_sql.sql
+sqlt_s58733_xpand_sql_driver.sql
+sqlt_s58733_tcb.zip
+sqlt_s58733_remote_driver.sql
+sqlt_s58733_tkprof_px_driver.sql
+sqlt_s58733_export_parfile.txt
+sqlt_s58733_export_parfile2.txt
+sqlt_s58733_export_driver.sql
+sqlt_s58733_import.sh
+sqlt_s58733_export.zip
+sqlt_s58733_tc.zip
+sqlt_s58733_log.zip
+sqlt_s58733_opatch.zip
+sqlt_s58733_remote.zip
+sqlt_s58733_10053_explain.trc
+sqlt_s58733_10053_i1_c0_extract.trc
+sqlt_s58733_xtract.log
+sqltxtract.log
+sqltxhost.log
+plan.sql
+10053.sql
+flush.sql
+purge.sql
+restore.sql
+del_hgrm.sql
+tc.sql
+tc_pkg.sql
+xpress.sql
+xpress.sh
+setup.sql
+q.sql
+sel.sql
+sel_aux.sql
+install.sql
+install.sh
+tcx_pkg.sql
+</pre>
+<p>Files generated under SQLT$UDUMP directory.<br>To locate SQLT$UDUMP: <code>SELECT directory_path FROM sys.dba_directories WHERE directory_name = 'SQLT$UDUMP';</code><br>Not all files may be available.</p>
+<pre>
+test_ora_2446_s58733_10053.trc
+test_ora_2446_s58733_10053_i1_c0.trc
+</pre>
+<p>Files generated under SQLT$BDUMP directory.<br>To locate SQLT$BDUMP: <code>SELECT directory_path FROM sys.dba_directories WHERE directory_name = 'SQLT$BDUMP';</code><br>Not all files may be available.</p>
+<pre>
+*_s58733_*.trc
+</pre>
+<p>Files generated under SQLT$STAGE directory.<br>To locate SQLT$STAGE: <code>SELECT directory_path FROM sys.dba_directories WHERE directory_name = 'SQLT$STAGE';</code><br>Not all files may be available.</p>
+<pre>
+sqlt_s58733_tcb_*
+README.txt
+</pre>
+
+<hr size="3">
+<font class="f">215187.1 sqlt_s58733_readme.html 2017-05-26/15:58:11</font>
+</body>
+</html>

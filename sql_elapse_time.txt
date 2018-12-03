@@ -1,0 +1,24 @@
+-- Information about how long particular sql_id took to run. v$sql refers to cumulated stats is from when the database last started. On the other hand, dba_hist_sqlstat
+-- as with  any thing starts with DBA is a persistent representation of data from v$sqlstat
+
+  -- v$sql example
+select sql_id
+, EXECUTIONS
+, CPU_TIME /1000/1000 cpu_time_miliseconds
+, ELAPSED_TIME /1000/1000 elapse_time_miliseconds
+, LAST_ACTIVE_TIME
+, ELAPSED_TIME / EXECUTIONS /1000/1000 avg_time_per_exec_mili
+from v$sql
+where sql_id = '6zjb13rnq9v0q'
+
+
+ -- dba_hist_sqlstat example 
+
+
+select sql_id
+, EXECUTIONS_TOTAL
+, CPU_TIME_TOTAL /1000/1000 cpu_time_miliseconds
+, ELAPSED_TIME_TOTAL /1000/1000 elapse_time_miliseconds
+, ELAPSED_TIME_TOTAL / EXECUTIONS_TOTAL /1000/1000  avg_time_per_exec_mili
+from DBA_HIST_SQLSTAT
+where sql_id = '8ctd72w71p8az'

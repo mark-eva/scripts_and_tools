@@ -1,0 +1,175 @@
+Database refresh using Datapump
+
+-- Full database export
+
+Assign the required privs to the user that is doing the import
+	grant EXP_FULL_DATABASE, IMP_FULL_DATABASE  to dbamgr/dev
+	grant read, write on data_pump_dir to dbamgr
+
+
+Create a  parameter file
+
+	userid=dbamgr/dev 
+	directory=data_pump_dir 
+	dumpfile=full_ec3dev1.dmp
+	logfile=full_ec3dev1.log 
+	full=y
+	content=all
+
+-- Full database import	
+
+Create user datapump user with privileges
+
+	create user datapump_admin identified by secret;
+	alter user DATAPUMP_ADMIN quota unlimited on users;
+	grant read  on directory data_pump_dir to datapump_admin;
+	grant write  on directory data_pump_dir to datapump_admin;
+	
+	Copy privs of dbamgr and apply to the datapump user in target
+	@copy_privs -- execute in the source database
+	
+Set OMF
+	alter system set db_create_file_dest = '/oracle/oradata/ec3dev2/' scope=both;
+	alter system set db_create_online_log_dest_1 = '/oracle/oradata/ec3dev2/' scope=both;
+
+	
+Create a parameter file (IMPORT)
+
+	userid=datapump_admin/secret 
+	directory=data_pump_dir 
+	dumpfile=full_ec3dev1.dmp
+	logfile=full_ec3dev1.log
+	full=y
+	content=all
+	TABLE_EXISTS_ACTION=REPLACE
+	
+	
+	
+Invoke impdp
+	impdp parfile=parameter_file_export	
+	
+Import sys objects privs from source to target
+	@copy_sys_obt_privs
+	run the spool file that has been produced
+	
+Execute oracle supplied scripts
+	
+   - catproc.sql -- rebuiilds all PLSQL packages
+   - utlrp.sql -- recompile all invalid objects
+   - utlproc.sql
+   
+   - replicated SYS synonyms that was not imported due to being in SYS schema
+		select 'create synonym '||owner||'.'||synonym_name||' for '||table_owner||'.'||table_name||';' 
+		from dba_synonyms where table_owner in ('SYS','SYSTEM','CTXSYS','DBSNMP','MDSYS','XDB','ORDSYS','WMSYS','SQLTXPLAIN')
+		and owner not in ('PUBLIC','SYS','SYSTEM','CTXSYS','DBSNMP','MDSYS','XDB','ORDSYS','WMSYS','SQLTXPLAIN')
+		;
+	
+   
+   
+
+   
+   
+   
+   
+   
+   View invalid Objects
+
+break on c1 skip 2
+
+set pages 999
+
+col c1 heading 'owner' format a15
+col c2 heading 'name' format a40
+col c3 heading 'type' format a30
+
+ttitle 'Invalid|Objects'
+
+select 
+   owner       c1, 
+   object_type c3,
+   object_name c2
+from 
+   dba_objects 
+where 
+   status != 'VALID'
+order by
+   owner,
+   object_type;
+
+	
+	
+	
+	
+
+	
+	
+	
+
+	
+	
+	
+---Try in the next run of datapump
+	userid=datapump_admin/secret 
+	directory=data_pump_dir 
+	dumpfile=full_ec3dev1.dmp
+	logfile=full_ec3dev1.log
+	full=y
+	exclude=table_statistics  -- disable statistics application which means fresh stats needs to be gathered after import
+	TABLE_EXISTS_ACTION=REPLACE
+	TRANSFORM=DISABLE_ARCHIVE_LOGGING:Y -- turns off archivelog for target objects during import then switches it back on
+	
+	
+------------------Checks
+Number of tables
+	col owner for a30
+	select owner, count(*) number_of_tables from dba_tables where 
+	owner != 'SYS' and owner like '%MGR%' 
+	or owner like '%APPENV%' group by owner
+	order by 2 DESC
+	
+
+	
+	
+Notes
+	- Some directories owned by SYS is obviously not imported
+	- JAMESMGR.INBOX table failed to be created
+	- MVIEW, sysnonyms, public and all other objects can be verified by checking dba_objects
+	- Check jobs are good
+		- 
+	
+
+	
+-- Checks and solution
+
+Invalid objects
+	Issue:
+		Compared source and target. Small number of pl/sql packages have been indentified. 
+		
+	Solution: 
+		Show error. and provide the missing grant usually in the form of dbms_lock
+		recompile the packages
+		
+
+
+	
+	
+		
+		
+
+		
+		
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+

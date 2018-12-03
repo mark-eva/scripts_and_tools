@@ -1,0 +1,125 @@
+--------------------------------------------------------------------------
+Common Defines
+--------------------------------------------------------------------------
+
+def datasource=dbamgr.session_snaps
+def datasource=dbamgr.session_snaps_hist
+
+
+def dbahistdetails=' and dbid=<dbid> and instance_name=1'
+def dbahistdetails=' and 1=1'
+
+
+def timingdetails="sample_time between to_date('08-Dec-2017 09:00', 'DD-Mon-YYYY HH24:MI') and to_date('08-Dec-2017 10:00', 'DD-Mon-YYYY HH24:MI')"
+
+def timingdetails="1=1"
+
+--------------------------------------------------------------------------
+Common Column Formats
+--------------------------------------------------------------------------
+
+col sql_id format a15
+col session_type format a15
+col program for a25 trunc
+col module format a15 trunc
+col action format a25
+col sid format a25
+col sid format 9999
+col event format a25 trunc
+col blocking_session heading 'BLK SID'
+col session_state format a13
+
+
+
+--------------------------------------------------------------------------
+-- Profile Anything
+--------------------------------------------------------------------------
+-- p1. profile all session (session_id %)
+-- p2. porfile the wait situation for all sessions (session_id %)
+-- p1/2. profile session 50 (session_id 50)
+-- p1/2. profile sql_id (sql_id abc123)
+
+def ashcolkey=session_id
+def ashcolval='%'
+def ashcolval='50'
+
+def ashcolkey=sql_id
+def ashcolkey=''
+
+set verify on
+set verify off
+
+
+def timingdetails="sample_time between to_date('03-May-2018 19:00', 'DD-Mon-YYYY HH24:MI') and to_date('03-May-2018 23:55', 'DD-Mon-YYYY HH24:MI')"
+
+select totAS,
+	oncpu/(oncpu+waiting) cpuPct,
+	waiting/(oncpu+waiting) waitingPct,
+	(userIO+sysIO)/waiting ioPct,
+	(waiting-userIO-sysIO)/waiting otherPct
+from
+(
+	select 
+		count (*) totAS,
+		sum (decode(session_state, 'ON CPU', 1,0)) oncpu,
+		sum (decode(session_state,'WAITING',1,0)) waiting,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) userIO,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) sysIO
+	from &datasource
+	where &timingdetails
+	and &ashcolkey like '&ashcolval%'
+)
+/
+select count(*) , wait_class
+from  &datasource
+where &timingdetails
+	  &dbahistdetails
+	and session_state ='WAITING'
+	and &ashcolkey like '&ashcolval%'
+group by wait_class
+order by 1 desc
+
+
+-- Included that relates to IO waits but does not fall on either USER I/O or SYSTEM I/O
+def timingdetails="sample_time >= current_timestamp - interval '1' minute"
+def timingdetails="sample_time between to_date('21-June-2018 09:00', 'DD-Mon-YYYY HH24:MI') and to_date('21-June-2018 16:00', 'DD-Mon-YYYY HH24:MI')"
+
+col  ON_CPU_PCT for a15
+col WAITING_PCT for a15
+col ioPct for a15
+col otherPct for a15
+
+select totAS,
+	trunc (oncpu/(oncpu+waiting)*100) || '%' ON_CPU_PCT,
+	trunc (waiting/(oncpu+waiting)*100) || '%'  WAITING_PCT,
+	trunc ((userIO+sysIO+Commit_IO+Configuration_IO+Other_IO1+Other_IO2+Other_IO3+Other_IO4)/waiting*100) || '%' ioPct,
+    trunc ((waiting-userIO-sysIO-Commit_IO-Configuration_IO-Other_IO1-Other_IO2-Other_IO3-Other_IO4)/waiting*100) otherPct
+from
+(
+	select 
+		count (*) totAS,
+		sum (decode(session_state, 'ON CPU', 1,0)) oncpu,
+		sum (decode(session_state,'WAITING',1,0)) waiting,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) userIO,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) sysIO,
+        sum (decode(session_state, 'WAITING', decode(wait_class,'Commit', 1,0))) Commit_IO, 
+        sum (decode(session_state, 'WAITING', decode(event,'103', 1,0))) Configuration_IO, 
+        sum (decode(session_state, 'WAITING', decode(event,'777', 1,0))) Other_IO1, 
+        sum (decode(session_state, 'WAITING', decode(event,'778', 1,0))) Other_IO2, 
+        sum (decode(session_state, 'WAITING', decode(event,'779', 1,0))) Other_IO3,
+        sum (decode(session_state, 'WAITING', decode(event,'780', 1,0))) Other_IO4 
+	from &datasource
+	where &timingdetails
+	and &ashcolkey like '&ashcolval%'
+)
+
+-- Modified event waits so you can join the event name
+
+select count(*) , a.event, b.name, b.wait_class
+from  &datasource a
+inner join v$event_name b on a.event = b.event#
+where a.sample_time between to_date('08-May-2018 09:00', 'DD-Mon-YYYY HH24:MI') and to_date('08-May-2018 18:30', 'DD-Mon-YYYY HH24:MI')
+	  	and a.session_state ='WAITING'
+	and a.&ashcolkey like '&ashcolval%'    
+group by a.event,  b.name, b.wait_class
+order by 1 desc

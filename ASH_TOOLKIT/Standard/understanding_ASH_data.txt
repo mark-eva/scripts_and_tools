@@ -1,0 +1,41 @@
+--------------------------------------------------------------------------
+Understanding ASH Data
+--------------------------------------------------------------------------
+
+set tab off
+set verify on 
+selt linesize 250
+col minSt format a25
+col maxSt format a25
+
+-- Change Session to a much nicer format
+alter session set nls_date_format = 'dd-mm-yyyy hh24:mi:ss'
+
+
+select count (*) from DBAMGR.SESSION_SNAPS;
+
+-- Range of Dates you can examine. SESSION_SNAPS_HIST tends to cover longer days 
+-- In some occassion the snap tables are owned by "MONITOR" rather than "DBAMGR"
+
+select min (sample_time) minSt
+, max (sample_time) maxSt
+from DBAMGR.SESSION_SNAPS
+
+or 
+
+select min (sample_time) minSt
+, max (sample_time) maxSt
+from DBAMGR.SESSION_SNAPS_HIST
+
+-- Select session state whether they are "ON CPU or WAITING"
+
+select distinct session_state,
+session_type
+from DBAMGR.SESSION_SNAPS_HIST
+
+-- Total number of what is currently on CPU and WAITING
+select sum(decode(session_state, 'ON CPU', 1,0)) oncpu
+, sum(decode(session_state, 'ON CPU', 1,0)) waiting
+from DBAMGR.SESSION_SNAPS_HIST
+
+

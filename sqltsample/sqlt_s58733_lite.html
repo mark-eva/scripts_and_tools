@@ -1,0 +1,506 @@
+<html>
+<!-- $Header: 215187.1 sqlt_s58733_lite.html 12.1.160429 2017/05/26 abel.macias $ -->
+<!-- Copyright (c) 2000-2015, Oracle Corporation. All rights reserved. -->
+<!-- Author: abel.macias@oracle.com -->
+<head>
+<title>sqlt_s58733_lite.html</title>
+<style type="text/css">
+a {font-weight:bold; color:#663300;}
+body {font:10pt Arial,Helvetica,Verdana,Geneva,sans-serif; color:black; background:white;}
+h1 {font-size:16pt; font-weight:bold; color:#336699;}
+h2 {font-size:14pt; font-weight:bold; color:#336699;}
+h3 {font-size:12pt; font-weight:bold; color:#336699;}
+li {font-size:10pt; font-weight:bold; color:#336699; padding:0.1em 0 0 0;}
+table {font-size:8pt; color:black; background:white;}
+th {font-weight:bold; background:#cccc99; color:#336699; vertical-align:bottom; padding-left:3pt; padding-right:3pt; padding-top:1pt; padding-bottom:1pt;}
+td {text-align:left; background:#fcfcf0; vertical-align:top; padding-left:3pt; padding-right:3pt; padding-top:1pt; padding-bottom:1pt;}
+td.left {text-align:left}
+td.right {text-align:right}
+td.title {font-weight:bold;text-align:right;background-color:#cccc99;color:#336699}
+font.tablenote {font-size:8pt;font-style:italic;color:#336699}
+font.f {font-size:8pt; color:#999999;
+</style>
+</head>
+<body>
+<h1>215187.1 SQLT XTRACT 12.1.160429 Report: sqlt_s58733_lite.html</h1>
+<ul>
+<li><a href="#plans_summary">Plans Summary</a></li>
+<li><a href="#plans">Plans</a></li>
+<li><a href="#tables">Tables</a></li>
+<li><a href="#table_columns">Table Columns</a></li>
+<li><a href="#indexes">Indexes</a></li>
+<li><a href="#index_columns">Index Columns</a></li>
+</ul>
+
+<hr size="3"><a name="plans_summary"></a><h2>Plans Summary</h2>
+<pre>
+                           Avg
+                          User   Avg
+                     AVG   I/O Other
+               Avg   CPU  Wait  Wait
+           Elapsed  Time  Time  Time    Avg   Avg    Avg                                Total
+ Plan Hash Time in    in    in    in Buffer  Disk Direct  Avg Rows      Total   Total Version Total         Total
+     Value    secs  secs  secs  secs   Gets Reads Writes Processed Executions Fetches   Count Loads Invalidations Src Source
+---------- ------- ----- ----- ----- ------ ----- ------ --------- ---------- ------- ------- ----- ------------- --- --------------------
+3514073651   0.124 0.122 0.000 0.000   5168     0      0         1          1       1       1     1             0 MEM GV$SQLAREA_PLAN_HASH
+</pre>
+
+
+<hr size="3"><a name="plans"></a><h2>Plans</h2>
+<table>
+<tr><th>#</th><th>Source</th><th>Plan<br>Hash Value</th><th>SQL<br>Handle</th><th>Plan<br>Name</th><th>Inst<br>ID</th><th>Child<br>Number</th><th>Executions</th><th>Format</th></tr>
+<tr>
+<td class= "title"><a href="#p1">1</a></td>
+<td class="left">GV$SQL_PLAN</td>
+<td class="right">3514073651</td>
+<td class="left"></td>
+<td class="left"></td>
+<td class="right">1</td>
+<td class="right">0</td>
+<td class="right">1</td>
+<td class="left">ADVANCED ALLSTATS LAST REPORT ADAPTIVE</td>
+</tr>
+<tr>
+<td class= "title"><a href="#p2">2</a></td>
+<td class="left">PLAN_TABLE</td>
+<td class="right">3514073651</td>
+<td class="left"></td>
+<td class="left"></td>
+<td class="right"></td>
+<td class="right"></td>
+<td class="right"></td>
+<td class="left">ADVANCED REPORT ADAPTIVE</td>
+</tr>
+</table>
+<font class="tablenote">Display of child plans is restricted up to 300 per phv as per tool parameter "r_rows_table_m".</font>
+<hr size="1"><a name="p1"></a><h3>GV$SQL_PLAN&nbsp;&nbsp;phv:3514073651&nbsp;&nbsp;inst:1&nbsp;&nbsp;child:0&nbsp;&nbsp;execs:1&nbsp;&nbsp;format:ADVANCED ALLSTATS LAST REPORT ADAPTIVE</h3>
+<pre>Plan hash value: 3514073651
+
+-------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                | Name             | E-Rows |E-Bytes| Cost (%CPU)| E-Time   |  OMem |  1Mem | Used-Mem |
+-------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT         |                  |        |       |  1190 (100)|          |       |       |          |
+|   1 |  SORT AGGREGATE          |                  |      1 |       |            |          |       |       |          |
+|   2 |   VIEW                   | DBA_OBJECTS      |  92082 |       |  1190   (1)| 00:00:01 |       |       |          |
+|   3 |    UNION-ALL             |                  |        |       |            |          |       |       |          |
+|*  4 |     FILTER               |                  |        |       |            |          |       |       |          |
+|*  5 |      HASH JOIN           |                  |  92437 |    11M|   393   (1)| 00:00:01 |  2440K|  2440K| 1558K (0)|
+|   6 |       INDEX FULL SCAN    | I_USER2          |     63 |   252 |     1   (0)| 00:00:01 |       |       |          |
+|*  7 |       HASH JOIN          |                  |  92437 |    11M|   391   (1)| 00:00:01 |  1599K|  1599K| 1296K (0)|
+|   8 |        INDEX FULL SCAN   | I_USER2          |     63 |  1512 |     1   (0)| 00:00:01 |       |       |          |
+|*  9 |        TABLE ACCESS FULL | OBJ$             |  92437 |  9117K|   390   (1)| 00:00:01 |       |       |          |
+|* 10 |      TABLE ACCESS FULL   | USER_EDITIONING$ |      1 |     6 |     2   (0)| 00:00:01 |       |       |          |
+|* 11 |      TABLE ACCESS FULL   | USER_EDITIONING$ |      1 |     6 |     2   (0)| 00:00:01 |       |       |          |
+|  12 |      NESTED LOOPS SEMI   |                  |      1 |    29 |     2   (0)| 00:00:01 |       |       |          |
+|* 13 |       INDEX SKIP SCAN    | I_USER2          |      1 |    20 |     1   (0)| 00:00:01 |       |       |          |
+|* 14 |       INDEX RANGE SCAN   | I_OBJ4           |      1 |     9 |     1   (0)| 00:00:01 |       |       |          |
+|  15 |     NESTED LOOPS         |                  |      1 |    17 |     0   (0)|          |       |       |          |
+|  16 |      INDEX FULL SCAN     | I_LINK1          |      1 |    13 |     0   (0)|          |       |       |          |
+|  17 |      TABLE ACCESS CLUSTER| USER$            |      1 |     4 |     0   (0)|          |       |       |          |
+|* 18 |       INDEX UNIQUE SCAN  | I_USER#          |      1 |       |     0   (0)|          |       |       |          |
+-------------------------------------------------------------------------------------------------------------------------
+
+Query Block Name / Object Alias (identified by operation id):
+-------------------------------------------------------------
+
+   1 - SEL$1
+   2 - SET$1        / DBA_OBJECTS@SEL$1
+   3 - SET$1
+   4 - SEL$1FF6F973
+   6 - SEL$1FF6F973 / U@SEL$2
+   8 - SEL$1FF6F973 / U@SEL$4
+   9 - SEL$1FF6F973 / O@SEL$4
+  10 - SEL$7        / UE@SEL$7
+  11 - SEL$8        / UE@SEL$8
+  12 - SEL$9
+  13 - SEL$9        / U2@SEL$9
+  14 - SEL$9        / O2@SEL$9
+  15 - SEL$10
+  16 - SEL$10       / L@SEL$10
+  17 - SEL$10       / U@SEL$10
+  18 - SEL$10       / U@SEL$10
+
+Outline Data
+-------------
+
+  /*+
+      BEGIN_OUTLINE_DATA
+      IGNORE_OPTIM_EMBEDDED_HINTS
+      OPTIMIZER_FEATURES_ENABLE(&#39;12.1.0.2&#39;)
+      DB_VERSION(&#39;12.1.0.2&#39;)
+      ALL_ROWS
+      OUTLINE_LEAF(@&quot;SEL$3&quot;)
+      OUTLINE_LEAF(@&quot;SEL$5&quot;)
+      OUTLINE_LEAF(@&quot;SEL$6&quot;)
+      OUTLINE_LEAF(@&quot;SEL$7&quot;)
+      OUTLINE_LEAF(@&quot;SEL$8&quot;)
+      OUTLINE_LEAF(@&quot;SEL$9&quot;)
+      OUTLINE_LEAF(@&quot;SEL$1FF6F973&quot;)
+      MERGE(@&quot;SEL$4&quot;)
+      OUTLINE_LEAF(@&quot;SEL$10&quot;)
+      OUTLINE_LEAF(@&quot;SET$1&quot;)
+      OUTLINE_LEAF(@&quot;SEL$1&quot;)
+      OUTLINE(@&quot;SEL$2&quot;)
+      OUTLINE(@&quot;SEL$4&quot;)
+      NO_ACCESS(@&quot;SEL$1&quot; &quot;DBA_OBJECTS&quot;@&quot;SEL$1&quot;)
+      INDEX(@&quot;SEL$10&quot; &quot;L&quot;@&quot;SEL$10&quot; (&quot;LINK$&quot;.&quot;OWNER#&quot; &quot;LINK$&quot;.&quot;NAME&quot;))
+      INDEX(@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot; &quot;I_USER#&quot;)
+      LEADING(@&quot;SEL$10&quot; &quot;L&quot;@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot;)
+      USE_NL(@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot;)
+      INDEX(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$4&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot; &quot;USER$&quot;.&quot;SPARE2&quot;))
+      FULL(@&quot;SEL$1FF6F973&quot; &quot;O&quot;@&quot;SEL$4&quot;)
+      INDEX(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot; &quot;USER$&quot;.&quot;SPARE2&quot;))
+      LEADING(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$4&quot; &quot;O&quot;@&quot;SEL$4&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      USE_HASH(@&quot;SEL$1FF6F973&quot; &quot;O&quot;@&quot;SEL$4&quot;)
+      USE_HASH(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      SWAP_JOIN_INPUTS(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      PQ_FILTER(@&quot;SEL$1FF6F973&quot; SERIAL)
+      INDEX_SS(@&quot;SEL$9&quot; &quot;U2&quot;@&quot;SEL$9&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot; &quot;USER$&quot;.&quot;SPARE2&quot;))
+      INDEX(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot; (&quot;OBJ$&quot;.&quot;DATAOBJ#&quot; &quot;OBJ$&quot;.&quot;TYPE#&quot; &quot;OBJ$&quot;.&quot;OWNER#&quot;))
+      LEADING(@&quot;SEL$9&quot; &quot;U2&quot;@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      USE_NL(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      PARTIAL_JOIN(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      FULL(@&quot;SEL$8&quot; &quot;UE&quot;@&quot;SEL$8&quot;)
+      FULL(@&quot;SEL$7&quot; &quot;UE&quot;@&quot;SEL$7&quot;)
+      INDEX_RS_ASC(@&quot;SEL$6&quot; &quot;EO&quot;@&quot;SEL$6&quot; (&quot;OBJ$&quot;.&quot;OBJ#&quot; &quot;OBJ$&quot;.&quot;OWNER#&quot; &quot;OBJ$&quot;.&quot;TYPE#&quot;))
+      BATCH_TABLE_ACCESS_BY_ROWID(@&quot;SEL$6&quot; &quot;EO&quot;@&quot;SEL$6&quot;)
+      FULL(@&quot;SEL$5&quot; &quot;UE&quot;@&quot;SEL$5&quot;)
+      INDEX_RS_ASC(@&quot;SEL$3&quot; &quot;S&quot;@&quot;SEL$3&quot; (&quot;SUM$&quot;.&quot;OBJ#&quot;))
+      END_OUTLINE_DATA
+  */
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - filter((( IS NULL AND &quot;O&quot;.&quot;TYPE#&quot;&lt;&gt;88) OR BITAND(&quot;O&quot;.&quot;FLAGS&quot;,1048576)=1048576 OR
+              BITAND(&quot;U&quot;.&quot;SPARE1&quot;,16)=0 OR ( IS NOT NULL AND ((&quot;U&quot;.&quot;TYPE#&quot;&lt;&gt;2 AND
+              SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_name&#39;)=&#39;ORA$BASE&#39;) OR (&quot;U&quot;.&quot;TYPE#&quot;=2 AND
+              &quot;U&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_id&#39;))) OR  IS NOT NULL))))
+   5 - access(&quot;O&quot;.&quot;SPARE3&quot;=&quot;U&quot;.&quot;USER#&quot;)
+   7 - access(&quot;O&quot;.&quot;OWNER#&quot;=&quot;U&quot;.&quot;USER#&quot;)
+   9 - filter((&quot;O&quot;.&quot;TYPE#&quot;&lt;&gt;10 AND &quot;O&quot;.&quot;NAME&quot;&lt;&gt;&#39;_NEXT_OBJECT&#39; AND &quot;O&quot;.&quot;NAME&quot;&lt;&gt;&#39;_default_auditing_options_&#39; AND
+              &quot;O&quot;.&quot;LINKNAME&quot; IS NULL AND BITAND(&quot;O&quot;.&quot;FLAGS&quot;,128)=0))
+  10 - filter((&quot;TYPE#&quot;=:B1 AND &quot;UE&quot;.&quot;USER#&quot;=:B2))
+  11 - filter((&quot;UE&quot;.&quot;TYPE#&quot;=:B1 AND &quot;UE&quot;.&quot;USER#&quot;=:B2))
+  13 - access(&quot;U2&quot;.&quot;TYPE#&quot;=2 AND &quot;U2&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_id&#39;)))
+       filter((&quot;U2&quot;.&quot;TYPE#&quot;=2 AND &quot;U2&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_id&#39;))))
+  14 - access(&quot;O2&quot;.&quot;DATAOBJ#&quot;=:B1 AND &quot;O2&quot;.&quot;TYPE#&quot;=88 AND &quot;O2&quot;.&quot;OWNER#&quot;=&quot;U2&quot;.&quot;USER#&quot;)
+  18 - access(&quot;L&quot;.&quot;OWNER#&quot;=&quot;U&quot;.&quot;USER#&quot;)
+
+Column Projection Information (identified by operation id):
+-----------------------------------------------------------
+
+   1 - (#keys=0) COUNT(*)[22]
+   5 - (#keys=1) &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22], &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22],
+       &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22], &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22], &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22], &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22]
+   6 - &quot;U&quot;.&quot;USER#&quot;[NUMBER,22]
+   7 - (#keys=1; rowset=200) &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22], &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22],
+       &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22], &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22], &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22]
+   8 - &quot;U&quot;.&quot;USER#&quot;[NUMBER,22], &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22]
+   9 - &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22], &quot;O&quot;.&quot;OWNER#&quot;[NUMBER,22], &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22],
+       &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22]
+  10 - &quot;UE&quot;.&quot;USER#&quot;[NUMBER,22], &quot;TYPE#&quot;[NUMBER,22]
+  11 - &quot;UE&quot;.&quot;USER#&quot;[NUMBER,22], &quot;UE&quot;.&quot;TYPE#&quot;[NUMBER,22]
+  13 - &quot;U2&quot;.&quot;USER#&quot;[NUMBER,22]
+  16 - &quot;L&quot;.&quot;OWNER#&quot;[NUMBER,22]
+  17 - &quot;U&quot;.ROWID[ROWID,10], &quot;U&quot;.&quot;USER#&quot;[NUMBER,22]
+  18 - &quot;U&quot;.ROWID[ROWID,10]
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+   - Warning: basic plan statistics not available. These are only collected when:
+       * hint &#39;gather_plan_statistics&#39; is used for the statement or
+       * parameter &#39;statistics_level&#39; is set to &#39;ALL&#39;, at session or system level
+   - 1 Sql Plan Directive used for this statement
+
+</pre>
+
+<hr size="1"><a name="p2"></a><h3>PLAN_TABLE&nbsp;&nbsp;phv:3514073651&nbsp;&nbsp;format:ADVANCED REPORT ADAPTIVE</h3>
+<pre><font class="crimson">select</font> count(*) <font class="crimson">from</font> dba_objects
+
+Plan hash value: 3514073651
+
+---------------------------------------------------------------------------------------------
+| Id  | Operation                | Name             | Rows  | Bytes | Cost (%CPU)| Time     |
+---------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT         |                  |     1 |       |  1190   (1)| 00:00:01 |
+|   1 |  SORT AGGREGATE          |                  |     1 |       |            |          |
+|   2 |   VIEW                   | DBA_OBJECTS      | 92082 |       |  1190   (1)| 00:00:01 |
+|   3 |    UNION-ALL             |                  |       |       |            |          |
+|*  4 |     FILTER               |                  |       |       |            |          |
+|*  5 |      HASH JOIN           |                  | 92437 |    11M|   393   (1)| 00:00:01 |
+|   6 |       INDEX FULL SCAN    | I_USER2          |    63 |   252 |     1   (0)| 00:00:01 |
+|*  7 |       HASH JOIN          |                  | 92437 |    11M|   391   (1)| 00:00:01 |
+|   8 |        INDEX FULL SCAN   | I_USER2          |    63 |  1512 |     1   (0)| 00:00:01 |
+|*  9 |        TABLE ACCESS FULL | OBJ$             | 92437 |  9117K|   390   (1)| 00:00:01 |
+|* 10 |      TABLE ACCESS FULL   | USER_EDITIONING$ |     1 |     6 |     2   (0)| 00:00:01 |
+|* 11 |      TABLE ACCESS FULL   | USER_EDITIONING$ |     1 |     6 |     2   (0)| 00:00:01 |
+|  12 |      NESTED LOOPS SEMI   |                  |     1 |    29 |     2   (0)| 00:00:01 |
+|* 13 |       INDEX SKIP SCAN    | I_USER2          |     1 |    20 |     1   (0)| 00:00:01 |
+|* 14 |       INDEX RANGE SCAN   | I_OBJ4           |     1 |     9 |     1   (0)| 00:00:01 |
+|  15 |     NESTED LOOPS         |                  |     1 |    17 |     0   (0)| 00:00:01 |
+|  16 |      INDEX FULL SCAN     | I_LINK1          |     1 |    13 |     0   (0)| 00:00:01 |
+|  17 |      TABLE ACCESS CLUSTER| USER$            |     1 |     4 |     0   (0)| 00:00:01 |
+|* 18 |       INDEX UNIQUE SCAN  | I_USER#          |     1 |       |     0   (0)| 00:00:01 |
+---------------------------------------------------------------------------------------------
+
+Query Block Name / Object Alias (identified by operation id):
+-------------------------------------------------------------
+
+   1 - SEL$1
+   2 - SET$1        / DBA_OBJECTS@SEL$1
+   3 - SET$1
+   4 - SEL$1FF6F973
+   6 - SEL$1FF6F973 / U@SEL$2
+   8 - SEL$1FF6F973 / U@SEL$4
+   9 - SEL$1FF6F973 / O@SEL$4
+  10 - SEL$7        / UE@SEL$7
+  11 - SEL$8        / UE@SEL$8
+  12 - SEL$9
+  13 - SEL$9        / U2@SEL$9
+  14 - SEL$9        / O2@SEL$9
+  15 - SEL$10
+  16 - SEL$10       / L@SEL$10
+  17 - SEL$10       / U@SEL$10
+  18 - SEL$10       / U@SEL$10
+
+Outline Data
+-------------
+
+  /*+
+      BEGIN_OUTLINE_DATA
+      INDEX_RS_ASC(@&quot;SEL$3&quot; &quot;S&quot;@&quot;SEL$3&quot; (&quot;SUM$&quot;.&quot;OBJ#&quot;))
+      FULL(@&quot;SEL$5&quot; &quot;UE&quot;@&quot;SEL$5&quot;)
+      BATCH_TABLE_ACCESS_BY_ROWID(@&quot;SEL$6&quot; &quot;EO&quot;@&quot;SEL$6&quot;)
+      INDEX_RS_ASC(@&quot;SEL$6&quot; &quot;EO&quot;@&quot;SEL$6&quot; (&quot;OBJ$&quot;.&quot;OBJ#&quot; &quot;OBJ$&quot;.&quot;OWNER#&quot; &quot;OBJ$&quot;.&quot;TYPE#&quot;))
+      FULL(@&quot;SEL$7&quot; &quot;UE&quot;@&quot;SEL$7&quot;)
+      FULL(@&quot;SEL$8&quot; &quot;UE&quot;@&quot;SEL$8&quot;)
+      PARTIAL_JOIN(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      USE_NL(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      LEADING(@&quot;SEL$9&quot; &quot;U2&quot;@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot;)
+      INDEX(@&quot;SEL$9&quot; &quot;O2&quot;@&quot;SEL$9&quot; (&quot;OBJ$&quot;.&quot;DATAOBJ#&quot; &quot;OBJ$&quot;.&quot;TYPE#&quot; &quot;OBJ$&quot;.&quot;OWNER#&quot;))
+      INDEX_SS(@&quot;SEL$9&quot; &quot;U2&quot;@&quot;SEL$9&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot;
+              &quot;USER$&quot;.&quot;SPARE2&quot;))
+      PQ_FILTER(@&quot;SEL$1FF6F973&quot; SERIAL)
+      SWAP_JOIN_INPUTS(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      USE_HASH(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      USE_HASH(@&quot;SEL$1FF6F973&quot; &quot;O&quot;@&quot;SEL$4&quot;)
+      LEADING(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$4&quot; &quot;O&quot;@&quot;SEL$4&quot; &quot;U&quot;@&quot;SEL$2&quot;)
+      INDEX(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$2&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot;
+              &quot;USER$&quot;.&quot;SPARE2&quot;))
+      FULL(@&quot;SEL$1FF6F973&quot; &quot;O&quot;@&quot;SEL$4&quot;)
+      INDEX(@&quot;SEL$1FF6F973&quot; &quot;U&quot;@&quot;SEL$4&quot; (&quot;USER$&quot;.&quot;USER#&quot; &quot;USER$&quot;.&quot;TYPE#&quot; &quot;USER$&quot;.&quot;SPARE1&quot;
+              &quot;USER$&quot;.&quot;SPARE2&quot;))
+      USE_NL(@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot;)
+      LEADING(@&quot;SEL$10&quot; &quot;L&quot;@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot;)
+      INDEX(@&quot;SEL$10&quot; &quot;U&quot;@&quot;SEL$10&quot; &quot;I_USER#&quot;)
+      INDEX(@&quot;SEL$10&quot; &quot;L&quot;@&quot;SEL$10&quot; (&quot;LINK$&quot;.&quot;OWNER#&quot; &quot;LINK$&quot;.&quot;NAME&quot;))
+      NO_ACCESS(@&quot;SEL$1&quot; &quot;DBA_OBJECTS&quot;@&quot;SEL$1&quot;)
+      OUTLINE(@&quot;SEL$4&quot;)
+      OUTLINE(@&quot;SEL$2&quot;)
+      OUTLINE_LEAF(@&quot;SEL$1&quot;)
+      OUTLINE_LEAF(@&quot;SET$1&quot;)
+      OUTLINE_LEAF(@&quot;SEL$10&quot;)
+      MERGE(@&quot;SEL$4&quot;)
+      OUTLINE_LEAF(@&quot;SEL$1FF6F973&quot;)
+      OUTLINE_LEAF(@&quot;SEL$9&quot;)
+      OUTLINE_LEAF(@&quot;SEL$8&quot;)
+      OUTLINE_LEAF(@&quot;SEL$7&quot;)
+      OUTLINE_LEAF(@&quot;SEL$6&quot;)
+      OUTLINE_LEAF(@&quot;SEL$5&quot;)
+      OUTLINE_LEAF(@&quot;SEL$3&quot;)
+      ALL_ROWS
+      DB_VERSION(&#39;12.1.0.2&#39;)
+      OPTIMIZER_FEATURES_ENABLE(&#39;12.1.0.2&#39;)
+      IGNORE_OPTIM_EMBEDDED_HINTS
+      END_OUTLINE_DATA
+  */
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - filter( NOT EXISTS (SELECT 0 FROM SYS.&quot;USER_EDITIONING$&quot; &quot;UE&quot; WHERE
+              &quot;TYPE#&quot;=:B1 AND &quot;UE&quot;.&quot;USER#&quot;=:B2) AND &quot;O&quot;.&quot;TYPE#&quot;&lt;&gt;88 OR
+              BITAND(&quot;O&quot;.&quot;FLAGS&quot;,1048576)=1048576 OR BITAND(&quot;U&quot;.&quot;SPARE1&quot;,16)=0 OR  EXISTS (SELECT
+              0 FROM SYS.&quot;USER_EDITIONING$&quot; &quot;UE&quot; WHERE &quot;UE&quot;.&quot;TYPE#&quot;=:B3 AND &quot;UE&quot;.&quot;USER#&quot;=:B4) AND
+              (&quot;U&quot;.&quot;TYPE#&quot;&lt;&gt;2 AND SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_name&#39;)=&#39;ORA$BASE&#39; OR
+              &quot;U&quot;.&quot;TYPE#&quot;=2 AND &quot;U&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_id&#39;))
+               OR  EXISTS (SELECT 0 FROM SYS.&quot;USER$&quot; &quot;U2&quot;,SYS.&quot;OBJ$&quot; &quot;O2&quot; WHERE
+              &quot;O2&quot;.&quot;OWNER#&quot;=&quot;U2&quot;.&quot;USER#&quot; AND &quot;O2&quot;.&quot;TYPE#&quot;=88 AND &quot;O2&quot;.&quot;DATAOBJ#&quot;=:B5 AND
+              &quot;U2&quot;.&quot;TYPE#&quot;=2 AND &quot;U2&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;current_edition_id&#39;
+              )))))
+   5 - access(&quot;O&quot;.&quot;SPARE3&quot;=&quot;U&quot;.&quot;USER#&quot;)
+   7 - access(&quot;O&quot;.&quot;OWNER#&quot;=&quot;U&quot;.&quot;USER#&quot;)
+   9 - filter(&quot;O&quot;.&quot;TYPE#&quot;&lt;&gt;10 AND &quot;O&quot;.&quot;NAME&quot;&lt;&gt;&#39;_NEXT_OBJECT&#39; AND
+              &quot;O&quot;.&quot;NAME&quot;&lt;&gt;&#39;_default_auditing_options_&#39; AND &quot;O&quot;.&quot;LINKNAME&quot; IS NULL AND
+              BITAND(&quot;O&quot;.&quot;FLAGS&quot;,128)=0)
+  10 - filter(&quot;TYPE#&quot;=:B1 AND &quot;UE&quot;.&quot;USER#&quot;=:B2)
+  11 - filter(&quot;UE&quot;.&quot;TYPE#&quot;=:B1 AND &quot;UE&quot;.&quot;USER#&quot;=:B2)
+  13 - access(&quot;U2&quot;.&quot;TYPE#&quot;=2 AND &quot;U2&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;curre
+              nt_edition_id&#39;)))
+       filter(&quot;U2&quot;.&quot;TYPE#&quot;=2 AND &quot;U2&quot;.&quot;SPARE2&quot;=TO_NUMBER(SYS_CONTEXT(&#39;userenv&#39;,&#39;curre
+              nt_edition_id&#39;)))
+  14 - access(&quot;O2&quot;.&quot;DATAOBJ#&quot;=:B1 AND &quot;O2&quot;.&quot;TYPE#&quot;=88 AND &quot;O2&quot;.&quot;OWNER#&quot;=&quot;U2&quot;.&quot;USER#&quot;)
+  18 - access(&quot;L&quot;.&quot;OWNER#&quot;=&quot;U&quot;.&quot;USER#&quot;)
+
+Column Projection Information (identified by operation id):
+-----------------------------------------------------------
+
+   1 - (#keys=0) COUNT(*)[22]
+   5 - (#keys=1) &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22],
+       &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22], &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22],
+       &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22], &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22]
+   6 - &quot;U&quot;.&quot;USER#&quot;[NUMBER,22]
+   7 - (#keys=1) &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22], &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22],
+       &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22], &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22], &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22],
+       &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22]
+   8 - &quot;U&quot;.&quot;USER#&quot;[NUMBER,22], &quot;U&quot;.&quot;TYPE#&quot;[NUMBER,22], &quot;U&quot;.&quot;SPARE1&quot;[NUMBER,22],
+       &quot;U&quot;.&quot;SPARE2&quot;[NUMBER,22]
+   9 - &quot;O&quot;.&quot;OBJ#&quot;[NUMBER,22], &quot;O&quot;.&quot;OWNER#&quot;[NUMBER,22], &quot;O&quot;.&quot;TYPE#&quot;[NUMBER,22],
+       &quot;O&quot;.&quot;FLAGS&quot;[NUMBER,22], &quot;O&quot;.&quot;SPARE3&quot;[NUMBER,22]
+  12 - (#keys=0)
+  13 - &quot;U2&quot;.&quot;USER#&quot;[NUMBER,22]
+  15 - (#keys=0)
+  16 - &quot;L&quot;.&quot;OWNER#&quot;[NUMBER,22]
+  17 - &quot;U&quot;.ROWID[ROWID,10], &quot;U&quot;.&quot;USER#&quot;[NUMBER,22]
+  18 - &quot;U&quot;.ROWID[ROWID,10]
+
+Sql Plan Directive information:
+-------------------------------
+
+  Valid directive ids:
+    3814111798494124542
+
+  Used directive ids:
+    17048299308902772651
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+   - 1 Sql Plan Directive used for this statement
+
+</pre>
+
+<hr size="3"><a name="tables"></a><h2>Tables</h2>
+<pre>
+                                                                                                                  Avg                    Stat
+                                         Num Sample                           Segment Segment         Empty   Avg Row Chain Global User  Type   Stale
+Table Name       Owner Part Temp Count  Rows   Size  Perc Last Analyzed       Extents  Blocks Blocks Blocks Space Len   Cnt Stats  Stats Locked Stats
+---------------- ----- ---- ---- ----- ----- ------ ----- ------------------- ------- ------- ------ ------ ----- --- ----- ------ ----- ------ -----
+LINK$            SYS   NO   N        0     0      0       2015-07-06/11:32:26       1       8      0      0     0   0     0 YES    NO           NO
+OBJ$             SYS   NO   N    91100 19416  19416 100.0 2015-07-06/11:32:29      27    1536    300      0     0 101     0 YES    NO           YES
+SUM$             SYS   NO   N        0     0      0       2015-07-06/11:32:46       1       8      0      0     0   0     0 YES    NO           NO
+USER$            SYS   NO   N      125    63     63 100.0 2015-07-06/11:32:50                      3      0     0 142     0 YES    NO           YES
+USER_EDITIONING$ SYS   NO   N        2     2      2 100.0 2015-07-06/11:32:50       1       8      1      0     0   6     0 YES    NO           NO
+</pre>
+
+
+<hr size="3"><a name="table_columns"></a><h2>Table Columns</h2>
+<pre>
+                                                                   Fluctuatin                                                                                           Avg                                  Fluctuatin
+                             Col   Num   Num Sample            Num NDV                                                                                                  Col                    Num           Endpoint   Global User
+Table Name       Column Name  ID  Rows Nulls   Size  Perc Distinct Count      Low Value                          High Value                         Last Analyzed       Len        Density Buckets Histogram Count      Stats  Stats
+---------------- ----------- --- ----- ----- ------ ----- -------- ---------- ---------------------------------- ---------------------------------- ------------------- --- -------------- ------- --------- ---------- ------ -----
+LINK$            NAME          2     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:26   0   0.000000e+00       0 NONE      FALSE      YES    NO
+LINK$            OWNER#        1     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:26   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             DATAOBJ#      2 19416 15281   4135 100.0     4098 FALSE      "2"                                "19646"                            2015-07-06/11:32:29   2   2.440215e-04       1 NONE      FALSE      YES    NO
+OBJ$             FLAGS        14 19416     0  19416 100.0       17 FALSE      "0"                                "7405568"                          2015-07-06/11:32:29   6   2.575196e-05      17 FREQUENCY FALSE      YES    NO
+OBJ$             LINKNAME     13 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             NAME          4 19416     0  19416 100.0    14550 FALSE      "ABSPATH"                          "old_values49_T"                   2015-07-06/11:32:29  20   6.900000e-05     254 HYBRID    FALSE      YES    NO
+OBJ$             NAMESPACE     5 19416     0  19416 100.0       19 FALSE      "1"                                "93"                               2015-07-06/11:32:29   3   2.575196e-05      19 FREQUENCY FALSE      YES    NO
+OBJ$             OBJ#          1 19416     0  19416 100.0    19416 FALSE      "1"                                "19639"                            2015-07-06/11:32:29   5   5.150391e-05       1 NONE      FALSE      YES    NO
+OBJ$             OID$         15 19416 17192   2224 100.0     2224 FALSE      "00000000000000000000000000000001" "D307723624873404E0340003BA0FD53F" 2015-07-06/11:32:29   3   4.496403e-04       1 NONE      FALSE      YES    NO
+OBJ$             OWNER#        3 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             REMOTEOWNER  12 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             SPARE1       16 19416     0  19416 100.0        2 FALSE      "0"                                "6"                                2015-07-06/11:32:29   3   5.000000e-01       1 NONE      FALSE      YES    NO
+OBJ$             SPARE2       17 19416     0  19416 100.0       11 FALSE      "1"                                "65535"                            2015-07-06/11:32:29   5   9.090909e-02       1 NONE      FALSE      YES    NO
+OBJ$             SPARE3       18 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             SUBNAME       6 19416 19010    406 100.0      206 FALSE      "$VSN_1"                           "WRM$_PDB_IN_SNAP_MXDB_MXSN"       2015-07-06/11:32:29   2   1.231527e-03     206 FREQUENCY FALSE      YES    NO
+OBJ$             TYPE#         7 19416     0  19416 100.0       44 FALSE      "0"                                "115"                              2015-07-06/11:32:29   4   2.575196e-05      44 FREQUENCY FALSE      YES    NO
+SUM$             OBJ#          1     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:46   0   0.000000e+00       0 NONE      FALSE      YES    NO
+SUM$             SPARE1       33     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:46   0   0.000000e+00       0 NONE      FALSE      YES    NO
+SUM$             SPARE2       34     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:46   0   0.000000e+00       0 NONE      FALSE      YES    NO
+SUM$             SPARE3       35     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:46   0   0.000000e+00       0 NONE      FALSE      YES    NO
+USER$            NAME          2    63     0     63 100.0       63 FALSE      "ADM_PARALLEL_EXECUTE_TASK"        "_NEXT_USER"                       2015-07-06/11:32:50  15   1.587302e-02       1 NONE      FALSE      YES    NO
+USER$            SPARE1       20    63     0     63 100.0        3 FALSE      "0"                                "400"                              2015-07-06/11:32:50   4   7.936508e-03       3 FREQUENCY FALSE      YES    NO
+USER$            SPARE2       21    63    63        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:50   0   0.000000e+00       0 NONE      FALSE      YES    NO
+USER$            SPARE3       22    63    63        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:50   0   0.000000e+00       0 NONE      FALSE      YES    NO
+USER$            TYPE#         3    63     0     63 100.0        2 FALSE      "0"                                "1"                                2015-07-06/11:32:50   3   7.936508e-03       2 FREQUENCY FALSE      YES    NO
+USER$            USER#         1    63     0     63 100.0       63 FALSE      "0"                                "2147483638"                       2015-07-06/11:32:50   4   1.587302e-02       1 NONE      FALSE      YES    NO
+USER_EDITIONING$ TYPE#         2     2     0      2 100.0        2 FALSE      "5"                                "10"                               2015-07-06/11:32:50   3   5.000000e-01       1 NONE      FALSE      YES    NO
+USER_EDITIONING$ USER#         1     2     0      2 100.0        1 FALSE      "1"                                "1"                                2015-07-06/11:32:50   3   2.500000e-01       1 FREQUENCY FALSE      YES    NO
+</pre>
+
+
+<hr size="3"><a name="indexes"></a><h2>Indexes</h2>
+<pre>
+                                                                                                                                                  Avg    Avg
+                                                                                                                                                 Leaf   Data
+                                                                                                                                               Blocks Blocks                         Stat
+                                                Index              Num Sample                           Distinct        Segment Segment   Leaf    per    per Clustering Global User  Type   Stale
+Table Name       Index Name               Owner Type   Part Temp  Rows   Size  Perc Last Analyzed           Keys BLevel Extents  Blocks Blocks    Key    Key     Factor Stats  Stats Locked Stats
+---------------- ------------------------ ----- ------ ---- ---- ----- ------ ----- ------------------- -------- ------ ------- ------- ------ ------ ------ ---------- ------ ----- ------ -----
+LINK$            I_LINK1                  SYS   NORMAL NO   N        0      0       2015-07-06/11:32:26        0      0       1       8      0      0      0          0 YES    NO           NO
+OBJ$             I_OBJ1                   SYS   NORMAL NO   N    19416  19416 100.0 2015-07-06/11:32:30    19416      1      18     384     55      1      1        358 YES    NO           YES
+OBJ$             I_OBJ2                   SYS   NORMAL NO   N    19416  19416 100.0 2015-07-06/11:32:30    19416      1      23    1024    178      1      1      10222 YES    NO           YES
+OBJ$             I_OBJ3                   SYS   NORMAL NO   N     2224   2224 100.0 2015-07-06/11:32:30     2224      1       3      24     14      1      1        186 YES    NO           YES
+OBJ$             I_OBJ4                   SYS   NORMAL NO   N    19416  19416 100.0 2015-07-06/11:32:30     4187      1      19     512     83      1      1       1278 YES    NO           YES
+OBJ$             I_OBJ5                   SYS   NORMAL NO   N    19416  19416 100.0 2015-07-06/11:32:30    19416      1      23    1024    177      1      1      10202 YES    NO           YES
+SUM$             I_SUM$_1                 SYS   NORMAL NO   N        0      0       2015-07-06/11:32:46        0      0       1       8      0      0      0          0 YES    NO           NO
+SUM$             SYS_IL0000001147C00030$$ SYS   LOB    NO   N                                                                                                           NO     NO
+SUM$             SYS_IL0000001147C00031$$ SYS   LOB    NO   N                                                                                                           NO     NO
+USER$            I_USER1                  SYS   NORMAL NO   N       63     63 100.0 2015-07-06/11:32:50       63      0       1       8      1      1      1         33 YES    NO           YES
+USER$            I_USER2                  SYS   NORMAL NO   N       63     63 100.0 2015-07-06/11:32:50       63      0       1       8      1      1      1          5 YES    NO           YES
+USER_EDITIONING$ I_USER_EDITIONING        SYS   NORMAL NO   N        2      2 100.0 2015-07-06/11:32:50        1      0       1       8      1      1      1          1 YES    NO           NO
+</pre>
+
+
+<hr size="3"><a name="index_columns"></a><h2>Index Columns</h2>
+<pre>
+                                                                                         Fluctuatin                                                                                           Avg                                  Fluctuatin
+                                   Col             Col   Num   Num Sample            Num NDV                                                                                                  Col                    Num           Endpoint   Global User
+Table Name       Index Name        Pos Column Name  ID  Rows Nulls   Size  Perc Distinct Count      Low Value                          High Value                         Last Analyzed       Len        Density Buckets Histogram Count      Stats  Stats
+---------------- ----------------- --- ----------- --- ----- ----- ------ ----- -------- ---------- ---------------------------------- ---------------------------------- ------------------- --- -------------- ------- --------- ---------- ------ -----
+LINK$            I_LINK1             1 OWNER#        1     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:26   0   0.000000e+00       0 NONE      FALSE      YES    NO
+LINK$            I_LINK1             2 NAME          2     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:26   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             I_OBJ1              1 OBJ#          1 19416     0  19416 100.0    19416 FALSE      "1"                                "19639"                            2015-07-06/11:32:29   5   5.150391e-05       1 NONE      FALSE      YES    NO
+OBJ$             I_OBJ1              2 OWNER#        3 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ1              3 TYPE#         7 19416     0  19416 100.0       44 FALSE      "0"                                "115"                              2015-07-06/11:32:29   4   2.575196e-05      44 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              1 OWNER#        3 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              2 NAME          4 19416     0  19416 100.0    14550 FALSE      "ABSPATH"                          "old_values49_T"                   2015-07-06/11:32:29  20   6.900000e-05     254 HYBRID    FALSE      YES    NO
+OBJ$             I_OBJ2              3 NAMESPACE     5 19416     0  19416 100.0       19 FALSE      "1"                                "93"                               2015-07-06/11:32:29   3   2.575196e-05      19 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              4 REMOTEOWNER  12 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             I_OBJ2              5 LINKNAME     13 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             I_OBJ2              6 SUBNAME       6 19416 19010    406 100.0      206 FALSE      "$VSN_1"                           "WRM$_PDB_IN_SNAP_MXDB_MXSN"       2015-07-06/11:32:29   2   1.231527e-03     206 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              7 TYPE#         7 19416     0  19416 100.0       44 FALSE      "0"                                "115"                              2015-07-06/11:32:29   4   2.575196e-05      44 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              8 SPARE3       18 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ2              9 OBJ#          1 19416     0  19416 100.0    19416 FALSE      "1"                                "19639"                            2015-07-06/11:32:29   5   5.150391e-05       1 NONE      FALSE      YES    NO
+OBJ$             I_OBJ3              1 OID$         15 19416 17192   2224 100.0     2224 FALSE      "00000000000000000000000000000001" "D307723624873404E0340003BA0FD53F" 2015-07-06/11:32:29   3   4.496403e-04       1 NONE      FALSE      YES    NO
+OBJ$             I_OBJ4              1 DATAOBJ#      2 19416 15281   4135 100.0     4098 FALSE      "2"                                "19646"                            2015-07-06/11:32:29   2   2.440215e-04       1 NONE      FALSE      YES    NO
+OBJ$             I_OBJ4              2 TYPE#         7 19416     0  19416 100.0       44 FALSE      "0"                                "115"                              2015-07-06/11:32:29   4   2.575196e-05      44 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ4              3 OWNER#        3 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              1 SPARE3       18 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              2 NAME          4 19416     0  19416 100.0    14550 FALSE      "ABSPATH"                          "old_values49_T"                   2015-07-06/11:32:29  20   6.900000e-05     254 HYBRID    FALSE      YES    NO
+OBJ$             I_OBJ5              3 NAMESPACE     5 19416     0  19416 100.0       19 FALSE      "1"                                "93"                               2015-07-06/11:32:29   3   2.575196e-05      19 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              4 TYPE#         7 19416     0  19416 100.0       44 FALSE      "0"                                "115"                              2015-07-06/11:32:29   4   2.575196e-05      44 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              5 OWNER#        3 19416     0  19416 100.0        9 FALSE      "0"                                "50"                               2015-07-06/11:32:29   3   2.575196e-05       9 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              6 REMOTEOWNER  12 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             I_OBJ5              7 LINKNAME     13 19416 19416        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:29   0   0.000000e+00       0 NONE      FALSE      YES    NO
+OBJ$             I_OBJ5              8 SUBNAME       6 19416 19010    406 100.0      206 FALSE      "$VSN_1"                           "WRM$_PDB_IN_SNAP_MXDB_MXSN"       2015-07-06/11:32:29   2   1.231527e-03     206 FREQUENCY FALSE      YES    NO
+OBJ$             I_OBJ5              9 OBJ#          1 19416     0  19416 100.0    19416 FALSE      "1"                                "19639"                            2015-07-06/11:32:29   5   5.150391e-05       1 NONE      FALSE      YES    NO
+SUM$             I_SUM$_1            1 OBJ#          1     0     0        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:46   0   0.000000e+00       0 NONE      FALSE      YES    NO
+USER$            I_USER1             1 NAME          2    63     0     63 100.0       63 FALSE      "ADM_PARALLEL_EXECUTE_TASK"        "_NEXT_USER"                       2015-07-06/11:32:50  15   1.587302e-02       1 NONE      FALSE      YES    NO
+USER$            I_USER2             1 USER#         1    63     0     63 100.0       63 FALSE      "0"                                "2147483638"                       2015-07-06/11:32:50   4   1.587302e-02       1 NONE      FALSE      YES    NO
+USER$            I_USER2             2 TYPE#         3    63     0     63 100.0        2 FALSE      "0"                                "1"                                2015-07-06/11:32:50   3   7.936508e-03       2 FREQUENCY FALSE      YES    NO
+USER$            I_USER2             3 SPARE1       20    63     0     63 100.0        3 FALSE      "0"                                "400"                              2015-07-06/11:32:50   4   7.936508e-03       3 FREQUENCY FALSE      YES    NO
+USER$            I_USER2             4 SPARE2       21    63    63        100.0        0 FALSE      ""                                 ""                                 2015-07-06/11:32:50   0   0.000000e+00       0 NONE      FALSE      YES    NO
+USER_EDITIONING$ I_USER_EDITIONING   1 USER#         1     2     0      2 100.0        1 FALSE      "1"                                "1"                                2015-07-06/11:32:50   3   2.500000e-01       1 FREQUENCY FALSE      YES    NO
+</pre>
+
+
+
+<hr size="3">
+<font class="f">215187.1 sqlt_s58733_lite.html 2017-05-26/15:58:05</font>
+</body>
+</html>

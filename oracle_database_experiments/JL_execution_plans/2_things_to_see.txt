@@ -1,0 +1,75 @@
+-- Adding on to the things discussed on part 1
+
+Format Options
+
+dbms_xplan.display_cursor () can take parameter such as sql_id, child_number and a formatting option. 
+
+Two helpful format options
+	peek_binds -- list the actual values used to optimize the query
+	outline -- list the hints that would be stored if we were to create a stored outline of sql plan baseline
+	
+	alternatively you can use the following to get the more verbose info
+	
+	select * from table(
+			dbms_xplan.display_cursor(null,null,'all')
+	);
+	
+
+	
+Output demontration
+
+	alter session set workarea_size_policy = manual;
+	alter session set sort_area_size = 10485760;
+
+	alter session set optimizer_mode = first_rows_10;
+	alter session set "_hash_join_enabled" = false;
+
+	set serveroutput off -- disable a call to dbms_output.get_lines
+
+	variable m_owner varchar2(32)
+	variable m_object varchar2(32)
+	execute :m_owner := 'TEST_USER'
+	execute :m_object := 'T1'
+
+	select /*+ tracking */  * from t1 
+	where owner = :m_owner 
+	and table_name = :m_object 
+	order by NUM_ROWS;
+
+	select * from table(
+		dbms_xplan.display_cursor(null,null,'outline peeked_binds')
+	);
+	
+	
+	
+	Outline Data  -- parameter based data
+	-------------
+	
+	  /*+
+	      BEGIN_OUTLINE_DATA
+	      IGNORE_OPTIM_EMBEDDED_HINTS
+	      OPTIMIZER_FEATURES_ENABLE('12.1.0.2')
+	      DB_VERSION('12.1.0.2')
+	      FIRST_ROWS(10) 					-- optimiser settings that we have set on the session level 
+	      OUTLINE_LEAF(@"SEL$1")
+	      FULL(@"SEL$1" "T1"@"SEL$1")
+	      END_OUTLINE_DATA
+	  */
+	
+	Peeked Binds (identified by position):
+	--------------------------------------
+	
+	   1 - :M_OWNER (VARCHAR2(30), CSID=873): 'TEST_USER'
+	   2 - :M_OBJECT (VARCHAR2(30), CSID=873): 'T1'
+	   
+	   
+
+
+
+;
+	   
+	   
+	   
+
+
+

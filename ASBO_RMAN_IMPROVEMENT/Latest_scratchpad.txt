@@ -1,0 +1,132 @@
+Test Email copy 
+
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use MIME::Lite;
+use Time::Piece;
+use Time::Seconds;
+
+my $msg;
+my $mail_host='fiv-smtp-out.fivium.local';
+
+
+
+$msg = MIME::Lite->new(
+        From     =>'mark.eva@fivium.co.uk',
+        To       =>'mark.eva@fivium.co.uk',
+        Subject  =>'This is a test my son!',
+        Data     =>"How's it goin', eh?"
+
+    );
+
+
+$msg->send('smtp', $mail_host );
+
+
+EMAIL senders and reciepient per environment:
+
+UKCLOUD
+	from: ukcloud-db@trade.gsi.gov.uk
+	to:	tech+spire-ecase-ukcloud-live@fivium.co.uk
+	
+Memset
+	from: oracledb@memset.ecase.co.uk
+	to: tech+eCase_Memset_databases@fivium.co.uk
+	
+Dev
+	from: fivium-fivium_hosting-development@fivium.co.uk
+	to: tech+dev_databases@fivium.co.uk
+
+Docker runs per environment
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=fivium-fivium_hosting-development@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl
+
+	
+	
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=fivium-fivium_hosting-development@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl fivium/asbo:2.0.0
+	
+To be added on dockerfile
+ chmod +x /app/alerts/send_sql_reports.pl 
+ yum install -y wget -- done
+ yum install -y cpan -- done
+ export PERL_MM_USE_DEFAULT=1 -- done
+ cpan MIME::Lite -- done
+ cpan Time::Piece -- done
+ 
+ 
+ yum install -y perl-MIME-Lite
+ yum install -y perl-Time-Piece
+
+ 
+ 
+ 
+ 
+ echo "0   7 * * * /app/alerts/send_sql_reports.pl" >> /var/spool/cron/root && \ -- done
+ 
+ 
+ Things to add on string replacement
+ 	
+ 	$asbo_server = '127.0.0.1' static change -- done
+ 	$initial_db = 'any_db_from_config' e.g. edust1 -- done on dev
+ 	$report_dir = '/app/alerts' -- static change	-- done
+	
+-------------------------------------------------------------------------------------------------------------------------------------
+Things to do:
+
+Add on Docker File
+	rm -f /app/avo.zip -- done
+	
+Change MUTT_FROM during run stage to the designated email account
+Dev Environment:
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=fivium-fivium_hosting-development@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl fivium/asbo:2.0.0
+
+Memset: 
+
+UKCLOUD:
+
+AWS:
+
+Further modify the string replacement -- done 
+	Change from_email_address replacement to fivium-fivium_hosting-development@fivium.co.uk
+	{from_email_address}{fivium-fivium_hosting\Q-\Edevelopment\Q@\Efivium.co.uk}g;
+	
+	Change to_email_address  to tech+dev_databases@fivium.co.uk
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Things to do 
+	string replacement on LIVE 
+		AWS: DONE
+		MEMSET:
+		UKCLOUD:
+	Rebuild docker image using the current docker file and test out emails are working
+	Push pull and implement on AWS
+	
+------------------------------------------------------------------------------------------------------------------------------------------
+DEV BUILD RUN and EXEC
+cd /opt/docker-files/fivium-asbo;docker build --no-cache -t fivium/asbo:2.0.1 .
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=fivium-fivium_hosting-development@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl fivium/asbo:2.0.1
+
+Tag and Push the New image
+docker tag fivium/asbo:2.0.1 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:2.0.1
+docker push 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:2.0.1
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Implementation on AWS Live
+aws ecr get-login --no-include-email | bash
+docker pull 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:2.0.1
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=fivium-aws_hosting-live@fivium.co.uk  --name asbo -d -p 80:80  -v /opt/docker/volumes/fivium-asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /opt/docker/volumes/fivium-asbo/prod/files/string_replacement.pl:/app/string_replacement.pl 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:2.0.1
+
+
+To DO:
+	Need to the find and set up the correct MUTT and SMPT_HOSTNAME value
+	ADD standby info on dbsync
+	
+	
+
+
+
+
+
+	
+	

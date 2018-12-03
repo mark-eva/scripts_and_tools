@@ -1,0 +1,111 @@
+-- Create schemas syntax
+	
+	SELECT LISTAGG(username,',') WITHIN GROUP (ORDER BY username)
+	FROM dba_users WHERE username LIKE '%MGR'
+
+
+
+-- expdp parfile
+
+expdp_icmslv
+
+
+	userid=datapumpmgr/cat8dog
+	directory=database_refresh
+	dumpfile=icmslv_ddl_extract.dmp
+	logfile=icmslv_ddl_extract.log
+	content=metadata_only
+	include=table, index, constraint
+	parallel=8
+	schemas=BPMMGR,DECMGR,DOCLIBMGR,ENVMGR,FOX5MGR,FOXMGR,FXMGR,HMRCMGR,IMPMGR,JAMESMGR,MAILSHOTMGR,PORTALMGR,PROMOTEMGR,REPORTMGR,SAVEMGR,SECUREMGR,SERVICEMGR,SPAGENTMGR,SPATIALMGR,TESTMGR,XVIEWMGR
+
+
+
+expdp_splv
+
+	userid=datapumpmgr/cat8dog
+	directory=database_refresh
+	dumpfile=splv_ddl_extract.dmp
+	logfile=splv_ddl_extract.log
+	content=metadata_only
+	include=table, index, constraint
+	parallel=8
+	schemas=BISAPIMGR,BPMMGR,DECMGR,EMAILMGR,ENVMGR,FOX5MGR,FOXMGR,HMRCMGR,JAMESMGR,PORTALMGR,PROMOTEMGR,PVEXMGR,READMGR,REPORTMGR,SAVEMGR,SDBMGR,SDBPUBMGR,SECUREMGR,SERVICEMGR,SPIREMGR,SURVEYMGR,TESTMGR,XVIEWMGR
+	
+	
+	
+	Error:
+	
+	ORA-39165: Schema EMAILMGR was not found.
+	ORA-39165: Schema READMGR was not found.
+
+	
+	
+	Reason: 
+	
+	SQL> select table_name from dba_tables where owner = 'EMAILMGR';
+
+	no rows selected
+
+	SQL> select table_name from dba_tables where owner = 'READMGR';
+
+	no rows selected
+	
+	
+expdp_sslv
+
+	userid=datapumpmgr/cat8dog
+	directory=database_refresh
+	dumpfile=sslv_ddl_extract.dmp
+	logfile=sslv_ddl_extract.log
+	content=metadata_only
+	include=table, index, constraint
+	parallel=8
+	schemas=BPMMGR,DATAPUMPMGR,DBAMGR,DECMGR,ENVMGR,FOX5MGR,FOXMGR,HMRCMGR,JAMESMGR,PORTALMGR,PROMOTEMGR,REPORTMGR,SAVEMGR,SDBMGR,SDBPUBMGR,SECUREMGR,SERVICEMGR,SHIPMGR,SPIREMGR,TESTMGR,XVIEWMGR
+	
+	Error
+		ORA-39165: Schema DATAPUMPMGR was not foun
+		ORA-39165: Schema HMRCMGR was not found.
+		ORA-39165: Schema SDBMGR was not found.
+		ORA-39165: Schema SPIREMGR was not found.
+		
+	Reason:
+	
+	SQL> select owner, table_name from dba_tables where owner in ('DATAPUMPMGR', 'HMRCMGR', 'SDBMGR', 'SPIREMGR' );
+
+	no rows selected
+
+		
+	
+
+
+
+-- impdp parfile
+
+impdp_icmslv
+
+	userid=datapumpmgr/cat8dog
+	directory=database_refresh
+	dumpfile=icmslv_ddl_extract.dmp
+	parallel=8
+	sqlfile=icmslv_mgr_schema_ddl_extract.sql
+	
+
+
+
+impdp_splv
+
+
+	userid=datapumpmgr/cat8dog
+	directory=database_refresh
+	dumpfile=splv_ddl_extract.dmp
+	parallel=8
+	sqlfile=splv_mgr_schema_ddl_extract.sql
+	
+impdp_sslv
+
+	userid=datapumpmgr/cat8dog
+    directory=database_refresh
+    dumpfile=sslv_ddl_extract.dmp
+    parallel=8
+    sqlfile=sslv_mgr_schema_ddl_extract.sql

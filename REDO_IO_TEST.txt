@@ -1,0 +1,6 @@
+If the log file parallel write average wait time is greater than 10ms (or 1cs),
+this normally indicates slow I/O throughput. 
+
+select event, time_waited, average_wait*10 AVERAGE_WAIT_ms
+ from   v$system_event 
+ where  event in ('log file parallel write','log file sync'); 

@@ -1,0 +1,60 @@
+set pagesize  999
+set linesize  32000
+set trimspool on
+
+column pcfree_max       format 999                  heading '% Free|Max'
+column pcfree_alloc     format 999                  heading '% Free|Alloc'
+column allocbytes       format 9,999,999,999,999    heading 'Allocated Bytes'
+column freebytes        format 9,999,999,999,999    heading 'Free Bytes'
+column usedbytes        format 9,999,999,999,999    heading 'Used Bytes'
+column maxbytes         format 999,999,999,999,999  heading 'Max Available'
+
+break on report
+
+compute sum of allocbytes   on report
+compute sum of usedbytes    on report
+compute sum of freebytes    on report
+compute sum of maxbytes     on report
+
+
+
+
+select name from v$database;
+
+
+select   
+       df.tablespace_name
+      ,decode((((df.maxbytes-(df.allocbytes-fr.fbytes)) / df.maxbytes) * 100 ),null,0,
+              (((df.maxbytes-(df.allocbytes-fr.fbytes)) / df.maxbytes) * 100 ))  pcfree_max
+      ,decode((((fr.fbytes) / df.allocbytes) * 100 ),null,0,
+              (((fr.fbytes) / df.allocbytes) * 100 ))  pcfree_alloc
+      ,fr.fbytes                       freebytes 
+      ,df.allocbytes-fr.fbytes         usedbytes 
+      ,df.allocbytes                   allocbytes 
+      ,df.maxbytes                     maxbytes
+from  (select   
+              df.tablespace_name
+             ,sum(df.bytes)          allocbytes 
+             ,decode (sum(df.maxbytes),0,sum(df.bytes),sum(df.maxbytes)) maxbytes
+      from    sys.dba_data_files     df
+      group   by df.tablespace_name) df,
+      (select   
+              fr.tablespace_name
+             ,sum(fr.bytes)          fbytes 
+      from    sys.dba_free_space     fr
+      group   by fr.tablespace_name) fr
+where df.tablespace_name = fr.tablespace_name(+)
+union
+select   
+       tf.tablespace_name
+      ,((tf.bytes-tu.ubytes)/tf.bytes) * 100  pcfree_alloc
+      ,((tf.bytes-tu.ubytes)/tf.bytes) * 100  pcfree_max      
+      ,tf.bytes-tu.ubytes freebytes
+      ,tu.ubytes          usedbytes
+      ,tf.bytes           allocbytes
+      ,tf.maxbytes        maxbytes
+from  dba_temp_files tf,
+      (select tablespace_name, bytes_used ubytes from v$temp_extent_pool) tu
+where tu.tablespace_name = tf.tablespace_name(+)
+order by pcfree_max
+/

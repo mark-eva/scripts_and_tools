@@ -1,0 +1,89 @@
+DIP
+
+Promoting code live ASBO
+
+1. Upload/Replace the designated file on Github
+	
+	- Proceed to the file
+	- edit this file
+	
+	
+	sudo su -
+	
+	
+ Build - cd /opt/docker-files/fivium-asbo;docker build --no-cache -t fivium/asbo .
+ Push  - docker push 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:1.1 -- Evertime you do a push increment the version e.g <1.1 to 1.2>
+ Run   - docker rm -f asbo;docker run --name asbo -d -p 80:80 -v /root/db_lookup.php:/app/conf/db_lookup.php fivium/asbo
+
+Add versioning to you build example
+
+cd /opt/docker-files/fivium-asbo;docker build --no-cache -t fivium/asbo .
+
+Add tag
+docker tag fivium/asbo fivium/asbo:1.3
+
+Refer to the build version during push
+docker tag fivium/asbo:latest 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:1.3
+docker push 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:1.3
+ 
+-- make latest update as latest
+ docker tag fivium/asbo:latest 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:latest
+ docker push 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:latest
+ 
+ The push refers to a repository [934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo]
+ef1c377c3f91: Pushed
+a18dd7751837: Layer already exists
+35bc870e8c6a: Layer already exists
+06097c7337c1: Layer already exists
+300d5d1b0939: Layer already exists
+cfdbacdfbe21: Layer already exists
+a7c087e58b5f: Layer already exists
+4b1fe5982a92: Layer already exists
+1d8af40bce5f: Layer already exists
+7ac21d56d315: Layer already exists
+4b4f01fbcaab: Layer already exists
+907bdd9f09a3: Layer already exists
+baf5b8e6b11e: Layer already exists
+5f70bf18a086: Layer already exists
+573c16f09f51: Layer already exists
+a9cf314a21bc: Layer already exists
+590577cbce58: Layer already exists
+51ebcf5708cd: Layer already exists
+ce5247c9b400: Layer already exists
+17c0e2984b78: Layer already exists
+e82a15dd68e8: Layer already exists
+f29cdc8e672b: Layer already exists
+f1591e9452df: Layer already exists
+29c92e988674: Layer already exists
+ceddf6185bdf: Layer already exists
+874f34b4a164: Layer already exists
+1ed6001661c5: Layer already exists
+3d841e359484: Layer already exists
+1.3: digest: sha256:4b3752380608558176764f011a07efd2dd08360ff8c5b9460d77541e3105480d size: 7618
+
+
+verify the file is there
+ll /root/db_lookup.php
+
+
+
+----
+
+Memset
+
+aws ecr get-login
+
+docker login -u AWS -p eyJwYXlsb2FkIjoiRmhlRmFuUXcrL2tSWHBHY2tIWGd2WGp2TUlJdWdwYWxPSUdWVGxzSWZzSFdhQjB1NG1SdFhsZ3hOcHhZMUkrdFdSWVhhZHpKY09PakFqQ0FmTGtDdlVzbUZLUHg2VWFybnZnWXRnWERDa05wRnczRm5SMXNxcWtuOHRFMldJVnRhdk95M3EzbGhOTGx6M0ZLUDJJVXRabDIzYU13ZCtPbFVnN2ZlbnlKYk02dk02VEQvdkMzUUNYZHFYV3FmOHR5NytkSm83VkhlSVd6Q1Z0QUlFcWE0RVVzTER0bVA2Q0gzenkwQ0FXazJhMmZ2VitFOStmREQrMEV3N0xSNVUzclJmOWFGWjNNeXc1UjRvalc2MnhkWklkaTg0WkpKWFVOa3pyYm9ueWdKeVlSbnZTRlNWSFhYQUtsVU9PMU9vem9OVDNDQk1nTjdMd2hpUnUyNVM3cllQNWlnVGhCL0JYdlVoSlZmc0gxdktVaXBnQUlrcTZyZnNoT25mcFlnQ1h3amFIUzBaYnFERnIyazNKZDFZVlVIZkxYQmdjcWRpZFFSOHdKQzVTNzc2bEZCZTdOdWtkbUthdVVMMTZWc1FSNjNLcmtJd0JSeTVRekJqYnhHRXZZSFJwazVQZjR0RStSeGdrOXg2QVo2bDN3T3JxdDV4VlJ0RnhwWVdUV201Sm9adUFlZzZNMlNFMXRJNFF3WWd2bmlzNXVOdllteGw2ZEVDT0FCa242NkJ4bUFTbW8vRTFJZkxNc3RFLzBSemoxb3FveEtLTXR0SGJ6bUYwWUR1K0JyNTJYYmNETFdoTHJoMVhQblZ1YmFmRlNudTcxK2ozTHVLaFpCQmtQTThOVHEvNnpBc2U4YlpSQWExcmRBV2dEd1ZTUE9xT1QwdlNBR3ExL0RLWHF4SUljMk5HUWZHQWxtODJEb0Y2Y01aSXMxcFNjeXFZNlI0QUFnV21qckUyMXNYa3Qwd1VuYlNxWVBqS1RTbXJQdC9LYmhVTE9lMXl1b0NqOFFBUUNlWGFtQ0t4ZktlU2FDL1FHRmJFYjA2L1pHN29XMVNkR2xJelFPUWphaWtrU1lQbzZmSUZZcG5uWHZ4NGNXdXZXWnFlbGZKekw0QzIwTVBFYkhibjlGRW52QkZacW5PQmhOY2RYdDdScjRqb3RVenY4a1dFbldPdjhWLzFNMVFpa1dvcHNicVE1OFdPZXp5L01jVGUxdXByNmxoektuVjBVOFlJRzU5aHV2OGs2Ykwxak1aeldnOFU1Wk03NUZlMlYwQjZ2V29LWFlxT1V0RkNUYW1HZ21TSHp2cDROeExTUFhkNW45WkJ1eXpZWXVTRG95QWNpMU9RcjRTK1FwVmgxbTRTV3RNUXJ6K1hBTEdlMjJtT25nVllNc1lnK005U2ZQdWZyRXFraStCMGtNWEwxWVlodHR0d1dBTGlHdE1FTFJSN21LMVVEQ0pidUFHT2R5ZDh1ZlBvPSIsImRhdGFrZXkiOiJBUUVCQUhoTkR6V1ZuWUd5bEszdFVhbEhBTnBtcm5RemE1dzRXNGNIWU1VODJ0Yk5Jd0FBQUg0d2ZBWUpLb1pJaHZjTkFRY0dvRzh3YlFJQkFEQm9CZ2txaGtpRzl3MEJCd0V3SGdZSllJWklBV1VEQkFFdU1CRUVEQXhxUVREcHl6aTc2UEdPUVFJQkVJQTdYRDZjVko1TFlvZGpwL0EwSmN4WUlub0c3UnRaWjVlMjhpWkREV1owQzJPYXJ5c3phQjA0d0lucVc4dTNudmpkb0x6dTkvYldkUW9sT3JBPSIsInZlcnNpb24iOiIyIiwidHlwZSI6IkRBVEFfS0VZIiwiZXhwaXJhdGlvbiI6MTUxMzIwOTI5MH0= https://934469127596.dkr.ecr.eu-west-2.amazonaws.com
+ 
+Pull
+docker pull 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:1.3
+
+-rwxrwxrwx 1 dockervol dockervol 1902 Sep 28 11:06 /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php
+[root@fiviuaa23 ~]# docker stop asbo
+asbo
+[root@fiviuaa23 ~]# docker rm asbo
+asbo
+
+docker run  -d -t  --name asbo -p 30000:80 -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/app/conf/db_lookup.php 934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:1.3
+
+

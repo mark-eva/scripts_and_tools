@@ -1,0 +1,53 @@
+set serveroutput on
+set pagesize 0
+set linesize 200
+begin
+  for r_rec in(
+  with lob_details
+  as
+  (
+    select 
+      l.table_name      table_name
+    , t.owner           table_owner
+    , l.column_name
+    , nvl(( select column_name from dba_tab_cols cc where cc.owner = l.owner and cc.table_name = l.table_name and cc.column_name !=  l.column_name and cc.column_id = c.column_id ),l.column_name ) table_lob_col
+    , c.data_type       lob_data_type
+    , l.cache           lob_cache
+    , l.in_row          lob_in_row
+    , l.tablespace_name lob_tbs
+    , decode(c.data_type,'CLOB','TBSCLOB',decode(c.data_type,'BLOB','TBSBLOB') ) correct_lob_tbs
+    , t.tablespace_name table_tbs
+    , t.last_analyzed
+    , t.num_rows
+    , (select bytes/1024 from dba_segments s where s.owner = l.owner and s.segment_name = l.segment_name) lob_size_kb
+    from 
+         dba_lobs   l
+    join dba_tables t   on t.owner = l.owner and t.table_name = l.table_name
+    join dba_tab_cols c on c.owner = l.owner and c.table_name = l.table_name and c.column_name = l.column_name
+    where 
+      l.owner like '%MGR' 
+    and
+      l.cache = 'NO'
+    and 
+    	l.owner != 'FOX5MGR'
+    order by 1,2
+    ) 
+    select 
+      'ALTER TABLE "'||ld.table_owner||'"."'||ld.table_name||'" MODIFY LOB ('||ld.column_name||') (  CACHE   )' cache_sql  
+    from lob_details ld
+    ) loop
+      begin
+        dbms_output.put_line(r_rec.cache_sql);
+        execute immediate( r_rec.cache_sql );
+      exception
+        when others then
+          dbms_output.put_line(sqlerrm);
+      end;
+
+ 
+    end loop;
+end;
+/
+
+
+

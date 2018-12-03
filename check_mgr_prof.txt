@@ -1,0 +1,6 @@
+col profile for a30
+col resource_name for a30
+col limit for a30 
+select * from dba_profiles where profile = 'MGR_USER' 
+AND RESOURCE_NAME = 'PASSWORD_LIFE_TIME'
+AND LIMIT = 'UNLIMITED'

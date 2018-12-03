@@ -1,0 +1,12 @@
+SET echo off
+set feedback off
+set pagesize 0
+set termout off
+spool '/home/oracle/db_refresh/sys_obt_grants.sql'
+
+select 'grant '||privilege||' on '||owner||'.'||table_name||' to '||grantee||';' from dba_tab_privs
+where grantor in ('SYS','SYSTEM')
+order by grantee
+
+/
+spool off

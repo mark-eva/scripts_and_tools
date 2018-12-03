@@ -1,0 +1,33 @@
+Re-pointing redologfile to a different location
+
+Summary: Depending on the situation such as whether it is a straight up restore or duplication, you might want the metadata regarding redo logs
+to be repointed somewhere else in terms of OS physical directory. This particular example encapsulates a duplciation scenario where post duplication
+the redo logs are still pointing to the source database. The aim of this procedure that re-point to the redo logs to a new one that we just created
+
+1. Ensure that the target database is on mount mode. 
+
+2. Manually create the redo log files to the designated directory
+	cd /oracle/fra/edust1/onlinelog
+	
+3. Connect to the target database as sys and start repointing the redo logs to the new designated directory
+
+Original one:
+	select * from v$logfile order by group#
+	
+	  1         ONLINE  /oracle/oradata/edudev3/redo01.log
+	  2         ONLINE  /oracle/oradata/edudev3/redo02.log
+	  3         ONLINE  /oracle/oradata/edudev3/redo03.log
+	  
+Repointing example:
+
+	ALTER DATABASE RENAME FILE '/oracle/oradata/edudev3/redo01.log', '/oracle/oradata/edudev3/redo02.log', '/oracle/oradata/edudev3/redo03.log' 
+    TO '/oracle/fra/edust1/onlinelog/redo01.log', '/oracle/fra/edust1/onlinelog/redo02.log', '/oracle/fra/edust1/onlinelog/redo03.log' 
+	
+Example result:
+	1         ONLINE  /oracle/fra/edust1/onlinelog/redo01.log
+	2         ONLINE  /oracle/fra/edust1/onlinelog/redo02.log
+	3         ONLINE  /oracle/fra/edust1/onlinelog/redo03.log
+	
+	
+	
+	

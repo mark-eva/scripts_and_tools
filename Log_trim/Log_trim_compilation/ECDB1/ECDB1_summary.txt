@@ -1,0 +1,38 @@
+Summary
+
+ECDB1
+
+Database		Logs %			Size		Reclaimable		Backup size	* 2		Predicted_backupsize_after_cutdown *2
+----------	  ----------	-----------		------------	---------------		-------------------------------------
+echmtlv1		 37%			315G		  44%/424G		  	1657G					846G
+ecscolv1		 54%			160G		  55%/168G			 524G					266G
+echmrclv1		 82%			 96G		  83%/98G			 220G					 44G
+ecpollv1		 87%			 35G		  92%/37G             72G					 14G	
+
+
+
+
+
+
+
+Total Reclaimable
+Size
+ 727G	Datafiles
+1303G	Backups
+
+------------------
+2030G
+
+
+
+
+
+
+
+
+
+
+
+
+
+

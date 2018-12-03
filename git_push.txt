@@ -1,0 +1,43 @@
+Clone the github repo to your local directory The url is provided on the repository page. This will create a new folder named
+after your new repo
+	cd /oracle/scripts/GITHUB
+	git clone https://github.com/IM4rk/A_DBCA.git
+
+Copy the base code to the new folder
+	cp -r * /oracle/scripts/GITHUB/A_DBCA
+	cd /oracle/scripts/GITHUB/A_DBCA
+	
+Set up login credentials and url
+	git config --global user.name "Mark Eva"
+	git config --global user.email mark.eva@fivium.co.uk
+	git remote set-url origin https://IM4rk@github.com/IM4rk/<reponame>
+	Example:
+		git remote set-url origin https://IM4rk@github.com/IM4rk/A_DBCA.git
+	
+		
+Prepare the pushing of the files
+	git status -- will show you the files that does not exist on the repo yet
+	git add . -- adds all the files listed when status command was invoked
+	git commit -- commits the changes that you want to implement
+	
+Invoke the push command
+Comment: 
+It used to error when when xming was not started as this prompts a GUI tool just for you to be able to enter your password
+
+	git push -- git this did not push your files then use the below command instead
+	git push -u origin master
+
+
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+
+
+

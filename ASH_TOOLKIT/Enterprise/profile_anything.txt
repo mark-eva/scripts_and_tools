@@ -1,0 +1,47 @@
+--------------------------------------------------------------------------
+-- Profile Anything
+--------------------------------------------------------------------------
+-- p1. profile all session (session_id %)
+-- p2. porfile the wait situation for all sessions (session_id %)
+-- p1/2. profile session 50 (session_id 50)
+-- p1/2. profile sql_id (sql_id abc123)
+
+def ashcolkey=session_id
+def ashcolval='%'
+def ashcolval='50'
+
+def ashcolkey=sql_id
+def ashcolkey=''
+
+set verify on
+set verify off
+
+
+def timingdetails="sample_time between to_date('03-May-2018 19:00', 'DD-Mon-YYYY HH24:MI') and to_date('03-May-2018 23:55', 'DD-Mon-YYYY HH24:MI')"
+
+select totAS,
+	oncpu/(oncpu+waiting) cpuPct,
+	waiting/(oncpu+waiting) waitingPct,
+	(userIO+sysIO)/waiting ioPct,
+	(waiting-userIO-sysIO)/waiting otherPct
+from
+(
+	select 
+		count (*) totAS,
+		sum (decode(session_state, 'ON CPU', 1,0)) oncpu,
+		sum (decode(session_state,'WAITING',1,0)) waiting,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) userIO,
+		sum (decode(session_state, 'WAITING', decode(wait_class,'User I/O', 1,0))) sysIO
+	from &datasource
+	where &timingdetails
+	and &ashcolkey like '&ashcolval%'
+)
+/
+select count(*) , wait_class
+from  &datasource
+where &timingdetails
+	  &dbahistdetails
+	and session_state ='WAITING'
+	and &ashcolkey like '&ashcolval%'
+group by wait_class
+order by 1 desc

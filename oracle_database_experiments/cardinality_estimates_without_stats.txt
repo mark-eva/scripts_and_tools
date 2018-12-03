@@ -1,0 +1,105 @@
+-- select from a clone of dba_objects with a filer
+select count (*) from DBAMGR.REFRESH_DBA_OBJECTS
+
+select count (*) from DBAMGR.REFRESH_DBA_OBJECTS
+where object_type = 'PACKAGE'
+
+/*
+    All rows returns:  103853
+    Filter of "package" returns: 1805
+*/
+
+-- what does the plan look like in terms of cardinality
+    set autotrace on
+    select count (*) from DBAMGR.REFRESH_DBA_OBJECTS
+    
+    select count (*) from DBAMGR.REFRESH_DBA_OBJECTS
+    where object_type = 'PACKAGE'
+
+/*
+with filter:
+
+    ------------------------------------------------------------------------------------------
+    | Id  | Operation          | Name                | Rows  | Bytes | Cost (%CPU)| Time     |
+    ------------------------------------------------------------------------------------------
+    |   0 | SELECT STATEMENT   |                     |     1 |     9 |   463   (1)| 00:00:01 |
+    |   1 |  SORT AGGREGATE    |                     |     1 |     9 |            |          |
+    |*  2 |   TABLE ACCESS FULL| REFRESH_DBA_OBJECTS |  1805 | 16245 |   463   (1)| 00:00:01 |
+    ------------------------------------------------------------------------------------------
+
+*/
+
+-- How does Oracle know the cardinality; Does the table have stats? 
+-- Answer: Yes
+col table_name for a20
+col 
+
+select owner ,table_name, stats_update_time
+from DBA_TAB_STATS_HISTORY
+where lower (table_name) = 'refresh_dba_objects'
+
+/*
+
+    OWNER                TABLE_NAME           STATS_UPDATE_TIME                  
+    -------------------- -------------------- -----------------------------------
+    DBAMGR               REFRESH_DBA_OBJECTS  23-OCT-18 14.09.49.748622000 +01:00
+    DBAMGR               REFRESH_DBA_OBJECTS  23-OCT-18 22.02.48.773421000 +01:00
+    DBAMGR               REFRESH_DBA_OBJECTS  24-OCT-18 14.15.41.673401000 +01:00
+
+*/
+
+-- Repeat the experiment without gathering stats about the table
+    create table dbamgr.test_dba_objects as select * from dba_objects
+
+
+-- Verify that the new table does not have any stats 
+
+alter session set nls_date_format  = 'dd-mm-yyyy hh24:mi:ss';
+select * from DBA_TAB_STATS_HISTORY
+where lower (table_name) = 'test_dba_objects'
+
+-- no rows selected
+
+-- what does the plan look like when we execute the same query with the filter of "PACKAGE"
+select count (*) from dbamgr.test_dba_objects
+where object_type = 'PACKAGE'
+
+/*
+
+    Execution Plan
+    ----------------------------------------------------------
+    Plan hash value: 719404581
+    
+    ---------------------------------------------------------------------------------------
+    | Id  | Operation          | Name             | Rows  | Bytes | Cost (%CPU)| Time     |
+    ---------------------------------------------------------------------------------------
+    |   0 | SELECT STATEMENT   |                  |     1 |     9 |   460   (1)| 00:00:01 |
+    |   1 |  SORT AGGREGATE    |                  |     1 |     9 |            |          |
+    |*  2 |   TABLE ACCESS FULL| TEST_DBA_OBJECTS |  2293 | 20637 |   460   (1)| 00:00:01 | -- row estimate is way off the intial query which is to be expected given the lack of stats
+    ---------------------------------------------------------------------------------------
+
+
+*/
+
+/*
+Where did the optimizer get this estimate from? According to JL the cardinality can be achieved using the following formula
+cadinality = num_distinct / num_rows
+Lets put that to the test by using the following query
+
+*/
+
+select * from dba_tables 
+where table_name = 'TEST_DBA_OBJECTS'
+
+    
+select * from dba_tab_columns 
+where table_name = 'TEST_DBA_OBJECTS'
+
+select a.num_rows
+, b.num_distinct
+, a.num_rows / b.num_distinct estimated_cardinality
+from dba_tables a , dba_tab_columns b
+where a.table_name = b.table_name
+and a.table_name = 'TEST_DBA_OBJECTS'
+and b.column_name = 'OBJECT_TYPE'
+    

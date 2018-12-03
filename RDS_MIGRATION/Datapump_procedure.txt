@@ -1,0 +1,119 @@
+Amazon RDS migration procedure
+
+1. Create database RDS instance as per amazon rds doco
+
+2. Export a full dumpfile
+	a. Create the user that will be doing the import
+		create user admin_datapump identified by oracle;
+		
+	b. Grant the required privs
+		
+		GRANT CREATE TABLE to admin_datapump;
+		GRANT UNLIMITED TABLESPACE to admin_datapump;
+		GRANT CREATE SESSION to admin_datapump;
+		GRANT DATAPUMP_EXP_FULL_DATABASE to admin_datapump;
+		GRANT READ, WRITE on directory data_pump_dir to admin_datapump;
+		GRANT SELECT ANY DICTIONARY to admin_datapump;
+		ALTER USER admin_datapump QUOTA UNLIMITED on USERS;
+		
+		
+	c. Create a parameter file
+		touch parfile
+		vim parfile
+		
+		userid=admin_datapump/oracle 
+		directory=data_pump_dir 
+		dumpfile=full_ec3dev1.dmp
+		logfile=full_ec3dev1.log 
+		full=y
+		
+		
+	d. Create or replace directory data_pump_dir
+		create or replace directory data_pump_dir as '/oracle/oradata/data_pump_dir/rds'
+		
+		select * from dba_directories where DIRECTORY_NAME = 'DATA_PUMP_DIR'
+		OWNER                DIRECTORY_NAME       DIRECTORY_PATH                                    
+		-------------------- -------------------- --------------------------------------------------
+		SYS                  DATA_PUMP_DIR        /oracle/oradata/data_pump_dir/rds                 
+		
+	e. Create a copy of sys.dba_objects. We will use this later on as a basis for comparison to ensure that we are not missing any objects 
+	   after the import completes
+	   
+	   conn dbamgr/dev
+	   create table dba_objects_orig as select * from sys.dba_objects; 
+	   
+	f. Invoke Datapump export
+		expdp parfile=parfile
+		
+3. Create a TNS entry pointing to RDS instance. On the the address entry add the endpoint provided in amazon rds
+	
+	a. Add an entry in tnsnames.ora
+		cd $ORACLE_HOME/network/admin
+		vim tnsnames.ora
+		
+		Example:
+			EC3DEV2 =
+			 (DESCRIPTION =
+			   (ADDRESS_LIST =
+				 (ADDRESS = (PROTOCOL = TCP)(Host =  ec3dev2.cygkqyesi7nk.eu-west-2.rds.amazonaws.com )(Port = 1521))
+			   )
+			 (CONNECT_DATA =
+			   (SERVICE_NAME = EC3DEV2)
+			 )
+			)
+	b. Test connection between source and target database 
+		tnsping ec3dev2
+		
+		Used TNSNAMES adapter to resolve the alias
+		Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(Host = ec3dev2.cygkqyesi7nk.eu-west-2.rds.amazonaws.com)(Port = 1521))) (CONNECT_DATA = (SERVICE_NAME = EC3DEV2)))
+		OK (60 msec)
+		
+4. Push the dumpfile to the Cloud
+	
+	a. Create a database link to the target DB instance
+	
+	create database link to_rds connect to rdsuser identified by "00.racl33"
+	using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ec3dev2.cygkqyesi7nk.eu-west-2.rds.amazonaws.com)(PORT=1521))(CONNECT_DATA=(SID=ec3dev2)))';
+	
+	b. Copy the dumpfile to the RDS DB instance (execute on the source database)
+	
+		BEGIN
+			DBMS_FILE_TRANSFER.PUT_FILE(
+			source_directory_object       => 'DATA_PUMP_DIR',
+			source_file_name              => 'full_ec3dev1.dmp',
+			destination_directory_object  => 'DATA_PUMP_DIR',
+			destination_file_name         => 'full_ec3dev1.dmp', 
+			destination_database          => 'to_rds' 
+			);
+		END;
+		/ 
+				
+6. Invoke the Import procedure  (Execute from Source Database)
+impdp rdsuser@ec3dev2 DUMPFILE=full_ec3dev1.dmp DIRECTORY=DATA_PUMP_DIR full=y  REMAP_TABLESPACE=SAVEDTABLES:TBSDATA,TBSBLOB:TBSDATA,NOACCESS:TBSDATA,TBSIDX:TBSDATA,TBSCLOB:TBSDATA
+	
+	
+	
+
+
+
+
+
+		
+		
+	
+			
+
+		
+		
+		
+
+	
+	
+	
+	
+	   
+
+		
+
+		
+		 

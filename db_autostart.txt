@@ -1,0 +1,38 @@
+cd /etc/init.d 
+touch dbora
+
+
+#!/bin/sh
+#
+# chkconfig: 35 99 01
+# description: Oracle db autostart
+export ORACLE_HOME=/oracle/product/12.1.0/db1
+export ORACLE_OWNER=oracle
+case "$1" in
+    'start')
+        touch /var/lock/subsys/dbora
+        su - $ORACLE_OWNER -c "$ORACLE_HOME/bin/dbstart $ORACLE_HOME"
+        ;;
+    'stop')
+        su - $ORACLE_OWNER -c "$ORACLE_HOME/bin/dbshut $ORACLE_HOME"
+        rm -f /var/lock/subsys/dbora
+        ;;
+esac
+
+
+tell linux to auto start and stop the service
+# chkconfig --add dbora
+# chkconfig dbora on
+# chmod +x dbora
+
+-- Check if the service has been switched on
+
+chkconfig --list dbora
+
+Example output:
+dbora           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+
+-- start it out manually
+dbora start
+
+

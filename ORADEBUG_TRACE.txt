@@ -1,0 +1,15 @@
+ CONN sys/password AS SYSDBA;  -- User must have SYSDBA.
+ 
+ORADEBUG SETMYPID;            -- Debug current session.
+ORADEBUG SETOSPID 32759;       -- Debug session with the specified OS process.
+ORADEBUG SETORAPID 123456;    -- Debug session with the specified Oracle process ID.
+ 
+ORADEBUG EVENT 10046 TRACE NAME CONTEXT FOREVER, LEVEL 12;
+ORADEBUG TRACEFILE_NAME;      -- Display the current trace file.
+
+ORADEBUG EVENT 10046 TRACE NAME CONTEXT OFF;
+
+-- Switching if off
+
+ORADEBUG SETOSPID <OSPID>;   
+ORADEBUG EVENT 10046 TRACE NAME CONTEXT OFF;

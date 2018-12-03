@@ -1,0 +1,20 @@
+
+NAME                                                                                                                                                                                                    
+---------                                                                                                                                                                                               
+EC3DEV2                                                                                                                                                                                                 
+
+
+  PATCH_ID ACTION          ACTION_TIME               VERSION    STATUS     DESCRIPTION                                                                                                                  
+---------- --------------- ------------------------- ---------- ---------- -----------------------------------------------------------------                                                            
+  26635845 APPLY           24-NOV-17 17.46.24.859657 12.1.0.2   SUCCESS    Database PSU 12.1.0.2.171017, Oracle JavaVM Component (OCT2017)                                                              
+
+
+NAME                                                                                                                                                                                                    
+---------                                                                                                                                                                                               
+EDUDEV3                                                                                                                                                                                                 
+
+
+  PATCH_ID ACTION          ACTION_TIME               VERSION    STATUS     DESCRIPTION                                                                                                                  
+---------- --------------- ------------------------- ---------- ---------- -----------------------------------------------------------------                                                            
+  26635845 APPLY           24-NOV-17 17.47.31.056477 12.1.0.2   SUCCESS    Database PSU 12.1.0.2.171017, Oracle JavaVM Component (OCT2017)                                                              
+

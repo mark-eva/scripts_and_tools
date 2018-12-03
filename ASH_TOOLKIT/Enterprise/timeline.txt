@@ -1,0 +1,58 @@
+--------------------------------------------------------------------------
+Common Defines
+--------------------------------------------------------------------------
+
+def datasource=DBAMGR.SESSION_SNAPS
+def datasource=DBAMGR.SESSION_SNAPS_HIST
+
+def dbahistdetails=' and 1=1'
+def dbahistdetails=' and dbid=<dbid> and instance_name=1'
+
+
+def timingdetails="sample_time >= current_timestamp - interval '2' minute"
+def timingdetails="sample_time between to_date('04-May-2017 09:00', 'DD-Mon-YYYY HH24:MI') and to_date('04-May-2017 10:00', 'DD-Mon-YYYY HH24:MI')"
+
+def timingdetails="1=1"
+
+--------------------------------------------------------------------------
+Common Column Formats
+--------------------------------------------------------------------------
+
+col sql_id format a15
+col session_type format a15
+col program for a25 trunc
+col module format a15 trunc
+col action format a25
+col sid format a25
+col sid format 9999
+col event format a25 trunc
+col blocking_session heading 'BLK SID'
+col session_state format a13
+
+
+
+--------------------------------------------------------------------------
+-- ASH Timeline Script
+--------------------------------------------------------------------------
+-- timeline session 50 (w/event, sql_id, blocking_session)
+-- timelines ession 170 (w/event, program)
+
+def ashCols='event, sql_id, blocking_session, program, module, machine'
+def ashCols='event, sql_id, program'
+def ashCols='event,program'
+
+def ashWhere='session_id=1994'
+def ashWhere='session_id=1437'
+
+
+select sample_id
+, to_char (sample_time, 'DD HH24:MI:SS') DT
+, session_id sid
+, session_state
+, &ashCols
+from &datasource
+where &timingdetails
+&dbahistdetails
+and &ashWhere
+order by 1,3
+/

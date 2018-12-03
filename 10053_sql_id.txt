@@ -1,0 +1,18 @@
+-- Generate 10053 trace file from sql_id
+
+begin
+dbms_sqldiag.dump_trace( 
+p_sql_id=>'55xb4rnhq4v53'
+, p_child_number=>0
+, p_component=>'Compiler'
+, p_file_id=>'dash_board'
+);
+end;
+/
+
+-- Change directory to where the trace file is
+
+	sqlplus / as sysdba
+	show parameter USER_DUMP_DEST
+	
+	

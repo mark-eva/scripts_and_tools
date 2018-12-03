@@ -1,0 +1,34 @@
+Typical Problem:
+Query does not return any rows when a particular join that uses xml is used
+
+Reference:https://support.oracle.com/knowledge/Oracle%20Database%20Products/1413803_1.html
+
+
+Example:
+
+-- Query that does not return anything
+
+SELECT 
+rd.*
+        FROM pprsmgr.return_details rd
+        JOIN pprsmgr.returns_view rv ON rv.r_id = rd.r_id
+        JOIN pprsmgr.reporting_periods rp ON rp.id = rv.rp_id
+        JOIN pprsmgr.xview_reporting_units xru ON xru.ru_id = rv.ru_id AND xru.status_control = 'C'
+        WHERE rd.id = 2635665;
+		
+		
+-- Query returns stuff due to added hint
+SELECT /*+ NO_XML_QUERY_REWRITE */
+rd.*
+        FROM pprsmgr.return_details rd
+        JOIN pprsmgr.returns_view rv ON rv.r_id = rd.r_id
+        JOIN pprsmgr.reporting_periods rp ON rp.id = rv.rp_id
+        JOIN pprsmgr.xview_reporting_units xru ON xru.ru_id = rv.ru_id AND xru.status_control = 'C'
+        WHERE rd.id = 2635665;
+		
+		
+
+
+
+
+

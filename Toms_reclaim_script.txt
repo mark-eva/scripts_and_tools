@@ -1,0 +1,20 @@
+SET TIMING ON
+
+CREATE TABLE
+  fox5mgr.fox_thread_tracks_saved
+TABLESPACE tbsdata
+AS
+  SELECT 
+    * 
+  FROM 
+    fox5mgr.fox_thread_tracks
+  WHERE 
+    track_written_timestamp > SYSDATE - 30
+/
+TRUNCATE TABLE fox5mgr.fox_thread_tracks
+/
+CREATE INDEX fox5mgr.fox_thread_tracks_date_idx
+INSERT INTO fox5mgr.fox_thread_tracks SELECT * FROM fox5mgr.fox_thread_tracks_saved 
+/
+DROP TABLE fox5mgr.fox_thread_tracks_saved PURGE
+/

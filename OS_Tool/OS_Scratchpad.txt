@@ -1,0 +1,46 @@
+OS tools 
+
+-- CPU utilization with 3 second sampling and 9 datasets
+sar -u 3 9
+
+-- vmstat version
+vmstat 3 9
+
+-- top and start looking on the top of the page which shows a summary instead
+
+-- Looking at what a particular process is currently doing
+strace -p <pid>
+
+-- Where does this OS tool get the OS datasets
+vmstat
+	/proc/stat
+
+	
+-- Oracle perspective -- cumulative
+col stat_name for a20
+select stat_name, value
+from v$osstat -- where does oracle get this data from?
+where stat_name in ('BUSY_TIME', 'IDLE_TIME')
+
+Lets strace MMNL which is apparently the oracle process responsible for  collecting osstat
+ ps -ef | grep -i mmnl
+strace -p <pid> 2> /oracle/out.ou
+
+if you search for "proc" within the logfile what you would fine is that it gets the data from 
+	open("/proc/31520/stat", O_RDONLY)      = 9
+	read(9, "31520 (ora_pmon_ec3dev) S 1 3152"..., 999) = 262
+	
+-- Calculate CPU utilization from v$osstat. COntinue doing this on an AWR report Bookmark Util 04
+
+	-- Time Used
+	select stat_name, value /100  from v$osstat 
+	where stat_name  = 'BUSY_TIME'
+	
+	-- Time available
+	select stat_name, value * 3600  from v$osstat 
+    where stat_name  = 'NUM_CPUS'
+
+
+
+
+

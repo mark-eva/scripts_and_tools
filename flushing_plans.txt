@@ -1,0 +1,10 @@
+Description:
+This procedure allows you to flush current plan for a sql inside the shared pool.
+
+1. Find out the address and hash_value for the target sql 
+	select address, hash_value from 
+	v$sqlarea 
+	where sql_id like 'd36r8u7skqn7t';
+	
+2. Embedd the 2 output on the package below to purge the plan
+	exec sys.dbms_shared_pool.purge('0000000243A1AA90, 4046147833','C');

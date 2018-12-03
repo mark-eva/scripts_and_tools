@@ -1,0 +1,43 @@
+DECLARE
+seg_task_id   number;
+seg_task_name varchar2(100);
+seg_task_desc varchar2(500);
+BEGIN
+seg_task_name := 'AdviceTest';
+seg_task_desc := 'Manual Segment Advisor Run for table TBSDATA';
+dbms_advisor.create_task (
+advisor_name => 'Segment Advisor',
+task_id      => seg_task_id,
+task_name    => seg_task_name,
+task_desc    => seg_task_desc);
+END;
+
+
+DECLARE
+obj_id        number;
+BEGIN
+dbms_advisor.create_object (
+task_name   => 'AdviceTest',
+object_type => 'TABLESPACE',
+attr1       => 'TBSDATA', 
+attr2       => NULL,
+attr3       => NULL,
+attr4       => NULL,
+attr5       => NULL,
+object_id   => obj_id);
+END;
+
+
+BEGIN
+dbms_advisor.set_task_parameter(
+task_name => 'AdviceTest',
+parameter => 'recommend_all',
+value     => 'TRUE');
+END;
+
+
+exec dbms_advisor.execute_task('AdviceTest');
+
+ 
+select message,more_info from dba_advisor_findings where task_name='AdviceTest'
+and message  like '%Enable%'

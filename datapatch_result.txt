@@ -1,0 +1,20 @@
+-- view history of datapatches that has been applied to the database
+
+set linesize 200
+col ACTION_TIME for a25
+col DESCRIPTION for a65
+col STATUS for a10
+col VERSION for a10
+
+
+
+
+select * from (
+select patch_id, action
+, ACTION_TIME
+, VERSION
+, STATUS
+, DESCRIPTION
+From  registry$sqlpatch
+order by ACTION_TIME DESC
+)where rownum <= 5;

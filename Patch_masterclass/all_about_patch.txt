@@ -1,0 +1,30 @@
+Automated patching notes -- Testing the October 2017 CPU patching
+
+1. Run pre-requiresites check 
+	cd to the patch directory
+	$ORACLE_HOME/OPatch/opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+	
+
+-- How to apply One off patch on a newly created completely unpatched database
+
+Current Patch 
+	26713565 -- October_2017 Release
+	
+1. Rollback all patches
+	$ORACLE_HOME/OPatch/opatch rollback -id  26713565
+	$ORACLE_HOME/OPatch/datapatch -verbose
+	
+2. Apply  25397136 (Proactive Bundle Patch ) then apply the one off patch 18795927
+
+Solution:
+	By switching to Proactive Bundle patch just to be able to apply the one off patch we are still going to get the latest patches as it comes
+	albeit a quater delayed and definitely a different path than your typical PSU
+	
+	Basically either follow PSU or BP
+	
+	
+	
+
+	
+	
+	

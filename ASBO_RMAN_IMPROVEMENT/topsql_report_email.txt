@@ -1,0 +1,56 @@
+To be added on dockerfile
+ chmod +x /app/alerts/send_sql_reports.pl
+ yum install -y wget
+ 
+ yum install cpan
+ 
+ 
+ 
+ -- Automatically install perl modules
+ export PERL_MM_USE_DEFAULT=1
+ cpan MIME::Lite
+ cpan MIME::Lite
+ cpan Time::Piece
+ 
+ perl -MCPAN -e install Time::Piece
+ 
+ 
+ /app/alerts
+ 
+ 
+ $msg->send('smtp', $mail_host);
+ 
+ $msg->send('smtp', $mail_host);
+ aspmx.l.google.com
+
+ 
+ 
+ 
+  $asbo_server='10.1.57.33';
+  
+  Memset
+  my $asbo_server='10.1.57.33';
+  
+  
+  
+   inet 172.18.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        inet6 fe80::42:6eff:fee6:5c3b  prefixlen 64  scopeid 0x20<link>
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        inet6 fe80::42:aaff:fece:5daf  prefixlen 64  scopeid 0x20<link>
+        inet 78.31.108.40  netmask 255.255.255.255  broadcast 78.31.108.40
+        inet6 fe80::bcef:c6ff:fe5f:3a19  prefixlen 64  scopeid 0x20<link>
+        inet 10.1.57.33  netmask 255.255.255.0  broadcast 10.1.57.255
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        inet 192.168.72.1  netmask 255.255.255.255  destination 192.168.72.2
+        inet6 fe80::679d:283c:ac80:eebf  prefixlen 64  scopeid 0x20<link>
+        inet6 fe80::84df:64ff:fe73:613b  prefixlen 64  scopeid 0x20<link>
+        inet6 fe80::f043:38ff:fed6:d5be  prefixlen 64  scopeid 0x20<link>
+        inet6 fe80::1455:4fff:fe1f:a98d  prefixlen 64  scopeid 0x20<link>
+        inet6 fe80::d857:faff:fe4c:c258  prefixlen 64  scopeid 0x20<link>
+        inet6 fe80::4cf3:92ff:fe0d:9572  prefixlen 64  scopeid 0x20<link>
+
+  
+  
+  
+  

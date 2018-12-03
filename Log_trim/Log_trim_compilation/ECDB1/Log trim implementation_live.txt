@@ -1,0 +1,29 @@
+Creating index for Log trim
+DIT ecase -- agreed database to be implemented on
+
+- Step 1 
+	Find out how long its gonna take to do a  index create (Live)
+
+- Step 2
+	create indexes or 
+	Write a script to do the rename (to an archive table)
+	
+- Step 3
+	Promote the log trimmer with the table in it
+	Repeat across all objects
+	
+- STep 4
+	create an index on the archive table 
+	insert data in line with the retention policy
+	drop archive table
+	
+- Step 5
+	Drop log table not required as per confluence page
+======================	
+ - Understand import export problems
+ - Consolidate log management jobs
+ 
+ - Understand rename table issues 
+ (Grants, invalid compilation, synonmyms, packages)
+ 
+ 

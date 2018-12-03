@@ -1,0 +1,56 @@
+ecpollv1
+Current size
+
+TABLESPACE_NAME                   Max  Alloc         Free Bytes         Used Bytes    Allocated Bytes        Max Available
+------------------------------ ------ ------ ------------------ ------------------ ------------------ --------------------
+TBSDATA                            45      4      1,575,878,656     37,661,835,264     39,237,713,920       68,719,443,968
+TEMP                               80     80         25,165,824          6,291,456         31,457,280       34,359,721,984
+TBSBLOB                            97     12        124,321,792        924,254,208      1,048,576,000       34,359,721,984
+SYSAUX                             98      6         51,838,976        766,050,304        817,889,280       34,359,721,984
+TBSCLOB                            98      6         40,108,032        589,037,568        629,145,600       34,359,721,984
+SYSTEM                             99     31        230,817,792        503,185,408        734,003,200       34,359,721,984
+TBSIDX                             99     11         35,258,368        279,314,432        314,572,800       34,359,721,984
+USERS                             100      5          5,505,024        101,974,016        107,479,040       34,359,721,984
+UNDOTBS1                          100     77        258,080,768         77,463,552        335,544,320       34,359,721,984
+SAVEDTABLES                       100     94         98,041,856          6,815,744        104,857,600       34,359,721,984
+NOACCESS                          100     98        103,153,664          1,703,936        104,857,600       34,359,721,984
+                                             ------------------ ------------------ ------------------ --------------------
+sum                                               2,548,170,752     40,917,925,888     43,466,096,640      412,316,663,808
+
+
+Logdata
+
+Based Tables
+
+OWNER                          TABLE_NAME                     DATE_COLUMN                    RETENTION_DAYS   Current_size		size with retention         Per_day
+------------------------------ ------------------------------ ------------------------------ -------------- -----------------  ----------------------	---------------
+bpmmgr                         bpm_logs                       log_datetime                               48 	
+bpmmgr                         bpm_log_step                   step_timestamp                             48   	   378
+fox5mgr                        FOX_THREAD_TRACKS              track_written_timestamp                   100 	 32786
+fox5mgr                        fox_engine_requests            LAST_UPDATED_DATETIME                      60 	
+fox5mgr                        fox_request_log                LOG_CREATED_TIMESTAMP                       1        568
+fox5mgr                        rest_request_log               request_datetime                           50 	   513	
+foxmgr                         search_query_logs              RUN_DATETIME                               10 	   245  
+foxmgr                         fox_thread_log                 LAST_UPDATED_DATE                          10 	
+foxmgr                         fox_requests                   START_DATETIME                              1 	
+foxmgr						   FOX_THREAD_LOG_QUERIES         -- ask support-------------------------------   	
+foxmgr						   FOX_UPLOAD_LOG				  -- ask support-------------------------------		
+foxmgr						   SEARCH_PARAM_LOGS			  -- ask support-------------------------------			 15
+
+
+35/40/43
+
+Logs total
+87%
+
+Reclaimable atleast
+92%
+37G
+
+
+
+
+
+
+
+

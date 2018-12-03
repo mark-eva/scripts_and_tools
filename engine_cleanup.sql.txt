@@ -1,0 +1,40 @@
+The following script cleans up the stale or unknowne connection table in a database running FOX app environment. The following symptom
+show a lot of pink icons on ASBO which indicates network waits. This however, does not utilize any resources and merely just a pain to 
+look at it ASBO
+
+SET SERVEROUTPUT ON SIZE UNLIMITED
+DECLARE
+  c_date_fmt CONSTANT VARCHAR2(30) := 'dd-Mon-yyyy hh24:mi:ss';
+  PROCEDURE p(p_str VARCHAR2)IS BEGIN DBMS_OUTPUT.PUT_LINE(p_str); END;
+BEGIN
+  p('------------');
+  p('Remove engines that are not there');
+  p('------------');
+  FOR l_rec IN (
+      SELECT
+        engine_locator,
+        status,
+        last_updated_datetime,
+        not_responding_since_datetime
+      FROM
+        fox5mgr.fox_engines
+      WHERE
+        status != 'RUNNING' --AND
+        --not_responding_since_datetime < SYSDATE - 1
+  ) LOOP
+    p(
+      'Remove '                            || l_rec.engine_locator                            ||
+      ', status : '                        || l_rec.status                                    ||
+      ', last_updated_datetime : '         || TO_CHAR(l_rec.last_updated_datetime,c_date_fmt) ||
+      ', not_responding_since_datetime : ' || TO_CHAR(l_rec.not_responding_since_datetime,c_date_fmt)
+    );
+    DELETE FROM fox5mgr.fox_connections    WHERE engine_locator = l_rec.engine_locator;
+    DELETE FROM fox5mgr.fox_engine_plugins WHERE engine_locator = l_rec.engine_locator;
+    DELETE FROM fox5mgr.fox_engines        WHERE engine_locator = l_rec.engine_locator;
+
+  END LOOP;
+END;
+/
+
+
+commit;

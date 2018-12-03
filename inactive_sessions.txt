@@ -1,0 +1,1 @@
+select username,machine,  floor( last_call_et/(24*60*60) ) days_inactive,count(1) how_many from v$session where username='ESRIMGR' group by  username,machine,  floor( last_call_et/(24*60*60) ) order by 3 desc;

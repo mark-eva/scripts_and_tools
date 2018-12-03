@@ -1,0 +1,96 @@
+ASBO Container Functional Requirements
+	Depending on the environment emailing to and from is changed on run time
+	On run time crontab for alerts is set inside the container
+	
+	
+To do:
+	- Add to the docker file
+		cd /
+		ln -s /var/www/html/ app
+		chmod +x /app/alerts/check_databases_email.sh
+		
+	- Test that email is being sent
+mutt tech+dev_databases@fivium.co.uk -e "set content_type=text/html" -s "Test Alert" -c mark.eva+dev_databases@fivium.co.uk  < /app/alerts//db_checks.html
+	
+	- Create a docker-compose
+	
+		
+	
+	/mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php
+	/mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl
+
+	
+	934469127596.dkr.ecr.eu-west-2.amazonaws.com/fivium/asbo:2.0.0
+	
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=mark.eva@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl fivium/asbo:2.0.0
+/app/string_replacement.pl
+
+FORCE_SEND_EMAIL
+
+-- Currently Working on Dev
+During docker run
+docker run -e HOST_NAME=`hostname` -e MUTT_SERVER=fiv-smtp-out -e MUTT_PORT=25  -e MUTT_FROM=mark.eva@fivium.co.uk  --name asbo -d -p 80:80  -v /mnt/gluster1/docker/volumes/asbo/prod/files/db_lookup.php:/var/www/html/conf/db_lookup.php -v /mnt/gluster1/docker/volumes/asbo/prod/files/string_replacement.pl:/app/string_replacement.pl fivium/asbo:2.0.0
+
+Building the Automated cron sched
+
+Run crond as as service. Add this to the dockerfile
+	/usr/sbin/crond
+	/usr/sbin/crond -n 
+	
+	
+	echo <cronjob> > crontab
+      
+Memset Example
+	  
+*/5 * * * * /root/alerts/check_databases_email.sh
+0   7 * * * /root/alerts/check_databases_email.sh FORCE_SEND_EMAIL
+0   7 * * * /root/sql_reports/send_sql_reports.pl
+
+Can work for RUN
+crontab -l ; echo "* * * * * echo "Hello world"" | crontab
+
+crontab -l; echo "0   7 * * * /root/alerts/check_databases_email.sh FORCE_SEND_EMAIL" |  crontab -
+crontab -l; echo "*/5 * * * * /root/alerts/check_databases_email.sh" | crontab
+
+
+
+/etc/sysconfig/crond
+
+to be added on the Docker File
+	yum install -y supervisor
+	
+to be added on  supervisor D command
+/usr/bin/supervisord
+	
+
+
+  
+-- Setting up SupervisorD to allow multiple foreground processes
+
+RUN echo "[supervisord]" > /etc/supervisord.conf && \
+echo "nodaemon=true" >> /etc/supervisord.conf && \
+echo "" >> /etc/supervisord.conf && \
+echo "" >> /etc/supervisord.conf && \
+echo "[program:httpd]" >> /etc/supervisord.conf && \
+echo "command=/usr/sbin/apachectl -D FOREGROUND" >> /etc/supervisord.conf && \
+echo "" >> /etc/supervisord.conf && \
+echo "[program:crond]" >> /etc/supervisord.conf && \
+echo "command=/usr/sbin/crond -n" >> /etc/supervisord.conf
+
+
+CMD ["/usr/bin/supervisord"]
+
+
+-- Setting up Crontab
+
+RUN echo "*/5 * * * * /app/alerts/check_databases_email.sh" > /var/spool/cron/root && \
+echo "0   7 * * * /app/alerts/check_databases_email.sh FORCE_SEND_EMAIL" >> /var/spool/cron/root
+
+
+
+
+
+
+
+
+	 

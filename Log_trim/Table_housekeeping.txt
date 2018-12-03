@@ -1,0 +1,15 @@
+Based Tables
+
+OWNER                          TABLE_NAME                     DATE_COLUMN                    RETENTION_DAYS   Current_size	
+------------------------------ ------------------------------ ------------------------------ -------------- -----------------
+bpmmgr                         bpm_logs                       log_datetime                               48 
+bpmmgr                         bpm_log_step                   step_timestamp                             48 
+fox5mgr                        FOX_THREAD_TRACKS              track_written_timestamp                   100 
+fox5mgr                        fox_engine_requests            LAST_UPDATED_DATETIME                      60 
+fox5mgr                        fox_request_log                LOG_CREATED_TIMESTAMP                       1 
+fox5mgr                        rest_request_log               request_datetime                           50 
+foxmgr                         search_query_logs              RUN_DATETIME                               10 
+foxmgr                         fox_thread_log                 LAST_UPDATED_DATE                          10 
+foxmgr                         fox_requests                   START_DATETIME                              1 
+
+

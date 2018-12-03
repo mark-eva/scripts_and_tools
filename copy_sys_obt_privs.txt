@@ -1,0 +1,18 @@
+SET echo off
+set feedback off
+set pagesize 0
+set termout off
+spool '/home/oracle/db_refresh/sys_obt_grants.sql'
+
+select 'GRANT '||privilege||' on '||owner||'.'||table_name||' to '||grantee||';' 
+from dba_tab_privs
+where grantee like '%APP%'
+or grantee like '%MGR%'
+and grantee not in ('SQLTXPLAIN', 'PUBLIC','SYS', 'SYSTEM', 'OUTLN', 'MDSYS', 'ORDSYS', 'DBSNMP', 'WMSYS', 'APPQOSSYS',
+'ORDDATA', 'CTXSYS', 'ANONYMOUS', 'XDB', 'ORDPLUGINS', 
+'SI_INFORMTN_SCHEMA', 'ORACLE_OCM', 'XS$NULL', 'MDDATA', 'DIP', 'SPATIAL_CSW_ADMIN_USR', 'SPATIAL_WFS_ADMIN_USR')
+and owner in ('SYS','SYSTEM')
+order by grantee
+
+/
+spool off

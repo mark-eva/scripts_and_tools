@@ -1,0 +1,32 @@
+The following Syntax creation script outputs the required command for creating the new physical redo files. The second set of output
+subsequently provide the sql syntax for repointing the redo logfiles
+
+set lines 200
+set pages 200
+col SYNTAX for a150
+select 'touch /oracle/fra/' || DIR  || '/' || FILE_NAME  || r ||'.log' AS CREATE_FILE from 
+(
+	select 'ALTER DATABASE RENAME FILE' || '''' || member  || '''' ||' ' ||'to' || ' ' ||'''' ||'/oracle/fra/' AS SYNTAX 
+	, (select upper(instance_name) from v$instance) AS DIR
+	, (select lower(instance_name) from v$instance) AS FILE_NAME
+	, rownum as R 
+	from v$logfile order by group#
+)
+
+
+/
+
+
+set lines 200
+set pages 200
+col SYNTAX for a150
+select SYNTAX  || DIR  || '/' || FILE_NAME  || r ||'.log' || '''' || ';' AS RENAME_REDO from 
+(
+	select 'ALTER DATABASE RENAME FILE' || '''' || member  || '''' ||' ' ||'to' || ' ' ||'''' ||'/oracle/fra/' AS SYNTAX 
+	, (select upper(instance_name) from v$instance) AS DIR
+	, (select lower(instance_name) from v$instance) AS FILE_NAME
+	, rownum as R 
+	from v$logfile order by group#
+)
+
+/

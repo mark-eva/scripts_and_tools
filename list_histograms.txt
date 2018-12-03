@@ -1,0 +1,8 @@
+-- Query to list all histogram in a table
+
+
+col column_name for a20
+SELECT column_name, num_distinct, histogram 
+FROM   dba_tab_col_statistics 
+WHERE  table_name = 'XV_BUSINESS_STAGES_DATA' 
+and COLUMN_NAME in ('CD_ID', 'CASE_ID', 'STATUS_CONTROL')

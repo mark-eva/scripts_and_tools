@@ -1,0 +1,12 @@
+1. shutdown immediate;
+   startup mount;
+2. Change dbname on all datafiles
+	nid target="/@<sid> as sysdba" dbname=<new_db_name>
+	nid target="/@ecnrcl1 as sysdba" dbname=ecnrcl1
+	
+2. rename db_name
+	ALTER SYSTEM SET DB_NAME=<new_SID> SCOPE=SPFILE; – or use pfile
+	ALTER SYSTEM SET DB_NAME=ecnrcl1 SCOPE=SPFILE; – or use pfile
+	
+	alter database open resetlogs;
+	

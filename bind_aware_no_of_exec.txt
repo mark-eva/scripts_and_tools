@@ -1,0 +1,10 @@
+-- Description: The query below states the number of times a query has been executed as well as whether the parent cursor is bind_aware which
+-- is essential for the optimizer getting the right plan for a ranging bind variable value specially with regards to dealing with skewed data
+
+
+SELECT SQL_TEXT, CHILD_NUMBER AS CHILD#, EXECUTIONS AS EXEC, 
+       BUFFER_GETS AS BUFF_GETS, IS_BIND_SENSITIVE AS BIND_SENS, 
+       IS_BIND_AWARE AS BIND_AWARE, IS_SHAREABLE AS SHARABLE
+FROM   V$SQL
+WHERE  SQL_TEXT LIKE '%SDO_AGGR_UNION%'
+and sql_id = 'fkmmgjhcc9a0c'

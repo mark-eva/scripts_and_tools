@@ -1,0 +1,7 @@
+-- The script outputs the syntax required for replicating all the grants or privs that a particular user has
+
+select 'GRANT' ||' '|| privilege || ' ' ||  'to' || ' ' || 'datapump_admin' || ';' from 
+dba_sys_privs where 
+grantee = 'DBAMGR'
+
+

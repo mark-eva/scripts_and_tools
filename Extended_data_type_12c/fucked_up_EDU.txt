@@ -1,0 +1,18 @@
+-- fucked up EDUDEV12c
+
+
+ORA-10562: Error occurred while applying redo to data block (file# 5, block# 1188613)
+ORA-10564: tablespace TBSDATA
+ORA-01110: data file 5: '/oracle/oradata/edudev3/EDUDEV3/datafile/o1_mf_tbsdata_dyjtw4w9_.dbf'
+ORA-10560: block type 'NGLOB: Persistent Undo'
+ORA-00600: internal error code, arguments: [KTSLU_PUA_REMCHK-1], [], [], [], [], [], [], [], [], [], [], []
+
+
+/oracle/product/12.1.0/db1/OPatch/opatch lsinventory
+
+Patch to rollback
+20539050
+
+Patch to the latest PSU
+
+

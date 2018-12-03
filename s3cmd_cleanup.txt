@@ -1,0 +1,73 @@
+#!/usr/bin/perl
+=pod
+Author:
+        Mark Eva
+Date:
+        2018/08/17
+
+Description:
+        Deletion script for files in cloud storage that utilizes s3cmd such as Amazon AWS
+        or ECS. Modify the target retention and the corresponding bucket to fit your requirements.
+        The script is currently set up as dry  run delete for testing purposes. However the delete command
+        can be made permanent by removing  "-n" parameter in $cmd_delete_files variable.
+
+Warning:
+         I cannot take responsibility for any damage cause. Use at your own discretion.
+
+
+=cut
+
+use strict;
+use warnings;
+use Getopt::Long;
+use Date::Manip;
+use Term::ANSIColor;
+use Time::localtime;
+use Date::Simple qw/date/;
+use Date::Range;
+
+#----------------------------------------------------------------------------------------------------------------
+#Define the target bucket and define the retention date
+#----------------------------------------------------------------------------------------------------------------
+
+our $bucket = "s3://prod-backups/daily/";
+our $days_old = "30";
+
+#----------------------------------------------------------------------------------------------------------------
+# Formatting and date manipulation
+#----------------------------------------------------------------------------------------------------------------
+
+our $get_retention = "date +\"%Y-%m-%d %H:%M\" --date=\"$days_old day ago\"";
+our $retention = `$get_retention`;
+our $get_current_date = "date +%Y-%m-%d";
+our $current_date = `$get_current_date`;
+
+our $cmd_s3 = "s3cmd  ls $bucket";
+our @all_files = `$cmd_s3`;
+
+#----------------------------------------------------------------------------------------------------------------
+# Loop over the output of s3cmd command
+#----------------------------------------------------------------------------------------------------------------
+
+print color ("red"), "List of files to be deleted: \n", color("reset");
+our $elem;
+
+foreach $elem (@all_files)
+{
+        my $createdate = substr($elem, 0, 17);
+        my $date_created = UnixDate( ParseDate($createdate), "%s" );
+
+        my $target_retention = UnixDate( ParseDate($retention), "%s" );
+
+
+        if ($date_created <= $target_retention)
+        {
+                my $files_to_delete = substr($elem, 29 );
+                print "$files_to_delete";
+
+                my $cmd_delete_files = "s3cmd rm -n $files_to_delete";
+                `$cmd_delete_files`;
+        }
+
+
+}

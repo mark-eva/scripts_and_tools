@@ -1,0 +1,44 @@
+-- Create new TEMP tablespace
+CREATE TEMPORARY TABLESPACE TEMP3 TEMPFILE '/oracle/oradata/ECNRCL2/ECNRCL1/temp3.dbf'
+SIZE 500m autoextend on next 10m maxsize unlimited;
+
+-- Change the new Temporary Tablespace to default
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TEMP3;
+
+-- Drop the old TEMPFILE
+DROP TABLESPACE TEMP1 including contents and datafiles
+
+
+-- Find out which sessions are currenly using TEMP tablespace if you cannot drop it
+
+SELECT b.tablespace,b.segfile#,b.segblk#,b.blocks,a.sid,a.serial#,
+a.username,a.osuser, a.status
+FROM v$session a,v$sort_usage b
+WHERE a.saddr = b.session_addr;
+
+-- View remaining tempfiles
+col name for a80
+set wrap off
+set linesize 280 
+
+select enabled
+, file#
+, creation_time
+, status
+, name
+from v$tempfile;
+
+
+-- Dropping TEMP that does not exist
+ select 'DROP TABLESPACE ' || tablespace_name as DROP_TEMP from
+ (
+         select tablespace_name from dba_tablespaces
+         where tablespace_name like '%TEMP%'
+         and tablespace_name != (select temporary_tablespace TABLESPACE_NAME from dba_users where username = 'SYS')
+ )
+
+
+
+
+
+

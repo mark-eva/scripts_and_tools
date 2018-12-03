@@ -1,0 +1,20 @@
+-- This procedure provides duration estimate of a dml or ddl operation. For this particular example we are going to estimate on how long
+   it will take to create an index for a particular table. Note however that the accuracy of the estimation relies on SYSTEM statistics 
+   as well the the object statistics of the corresponding object involved.
+   
+   
+-- The DDL operation we want to run 
+    explain plan for create index track_written_timestamp_idx  on  FOX5MGR.FOX_THREAD_TRACKS nologging  (track_written_timestamp) online;
+   
+-- Show estimates
+   select * from table(dbms_xplan.display);
+   
+   
+   Things to check to ensure optimum accuracy 
+   
+   - select * from sys.aux_stats$
+   - select count (*) from <table>
+		- check the estimated number of rows vs actual number of rows
+   - If there is a wide gap then manually gather the stats for the object
+   EXEC dbms_stats.gather_table_stats('FOXMGR','FOX_THREAD_LOG',cascade=>TRUE);
+	
