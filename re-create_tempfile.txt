@@ -30,7 +30,7 @@ from v$tempfile;
 
 
 -- Dropping TEMP that does not exist
- select 'DROP TABLESPACE ' || tablespace_name as DROP_TEMP from
+ select 'DROP TABLESPACE ' || tablespace_name ||  ' INCLUDING CONTENTS AND DATAFILES;' as DROP_TEMP from
  (
          select tablespace_name from dba_tablespaces
          where tablespace_name like '%TEMP%'
